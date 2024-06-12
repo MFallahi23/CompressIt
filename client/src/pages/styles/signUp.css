@@ -1,0 +1,156 @@
+.errmsg {
+  background-color: lightpink;
+  color: firebrick;
+  font-weight: bold;
+  padding: 0.5rem;
+  /* margin-bottom: 0.5rem; */
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+.instructions {
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 11;
+  top: 100%;
+  text-align: left;
+}
+.instructions > svg {
+  margin-right: 0.25rem;
+}
+.input__container {
+  position: relative;
+  height: 45px;
+  padding-left: 10px;
+}
+
+.signForm label {
+  position: relative;
+}
+
+.signForm > div {
+  flex-shrink: 0;
+  flex-grow: 0;
+  width: 100%;
+  /* border: 1px solid red; */
+}
+
+/* Remove default styling when autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #f8f7f4 inset !important;
+}
+.signForm input {
+  border: 1px solid #dadce0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 4px;
+  outline: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0px 16px !important;
+
+  background: #f8f7f4;
+  transition: 0.25s;
+}
+.input__placeholder {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 11px;
+  background-color: #f8f7f4;
+  padding: 0 5px;
+  color: #a7a7a7;
+  transition: 0.25s;
+}
+
+.signForm input:focus,
+.signForm input:not([value=""]) {
+  /* box-shadow: 0 0 0 1px #4285f4 inset;
+  border-color: #4285f4; */
+  /* box-shadow: 0 0 0 1px #d22b2b inset;
+  border-color: #d22b2b; */
+  box-shadow: 0 0 0 1px black inset;
+  border-color: black;
+}
+.signForm input:focus + .input__placeholder,
+.signForm input:not([value=""]) + .input__placeholder {
+  top: -8px;
+  font-size: 12px;
+  transform: translateY(0);
+  /* color: #4285f4; */
+  color: black;
+  /* color: #d22b2b; */
+  font-weight: 500;
+}
+.signForm input.invalid__input {
+  box-shadow: 0 0 0 1px #d22b2b inset; /* Change to your desired invalid color */
+  border-color: #d22b2b; /* Change to your desired invalid color */
+}
+
+.signForm input.invalid__input + .input__placeholder {
+  color: #d22b2b; /* Change to your desired invalid color */
+}
+
+.hide {
+  display: none;
+}
+
+.valid {
+  margin-left: 0.25rem;
+  position: absolute;
+  z-index: 10;
+  right: -13rem;
+  top: -5px;
+}
+
+.invalid {
+  margin-left: 0.25rem;
+  position: absolute;
+  z-index: 10;
+  right: -13rem;
+  top: -5px;
+}
+
+.eye-icon {
+  position: absolute;
+  bottom: 50%;
+  transform: translateY(50%);
+  right: 15px;
+}
+
+.sign-up__line {
+  position: relative;
+}
+.sign-up__line::after {
+  content: "";
+  width: calc((100% - 40px) / 2);
+  height: 2px;
+  background-color: #7c7979;
+  z-index: 10;
+  position: absolute;
+  top: 50%;
+  margin-left: 10px;
+}
+.sign-up__line::before {
+  content: "";
+  width: calc((100% - 40px) / 2);
+  height: 2px;
+  background-color: #7c7979;
+  z-index: 10;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-right: 10px;
+}

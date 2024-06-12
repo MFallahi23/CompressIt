@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+/* Images */
+img {
+  max-width: 100%;
+}
+/* logo */
+.header__logo img {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(40deg) brightness(1.3);
+}
+
+/* Main structure */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+body {
+  background: linear-gradient(to bottom, #8b0000, #000000);
+  /* background: radial-gradient(circle, #8b0000, #2a2a2a); */
+  /* background: linear-gradient(to bottom right, #ff3333, #660000); */
+  /* background: linear-gradient(to bottom, #4c0000, #2a0000); */
+}
+
+.no-scroll {
+  overflow: hidden;
+}

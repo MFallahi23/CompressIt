@@ -1,0 +1,6 @@
+/* Footer scondary column */
+
+.secondary-column li:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -1,0 +1,35 @@
+.personal-info__display > div {
+  padding: 0.5rem;
+}
+.personal-info__display h4 {
+  color: slategray;
+}
+
+.personal-info__display {
+  display: flex;
+  flex-wrap: wrap;
+}
+.personal-info__display > div {
+  flex: 1 1 50%;
+}
+
+.profile__modal__form > div {
+  position: relative;
+}
+
+.profile__modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.profile__modal__form > div::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: gray;
+  opacity: 30%;
+  top: -10px;
+}

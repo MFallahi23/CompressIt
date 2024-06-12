@@ -1,0 +1,20 @@
+/* Active Nav links */
+.active {
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+}
+.active::before {
+  content: "";
+  width: 5px;
+  height: 100%;
+  position: absolute;
+  background: #ffd700;
+  left: -8px;
+  border-radius: 5px;
+  top: 0;
+}
+
+aside a:hover,
+.profile__log-out:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
