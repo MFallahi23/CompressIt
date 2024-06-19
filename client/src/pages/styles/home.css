@@ -1,0 +1,75 @@
+.cta__btn {
+  /* background: linear-gradient(to bottom, #ff8c00, #ff4500); */
+  /* background: linear-gradient(to bottom, #ff6347, #ff4500); */
+  background: linear-gradient(to bottom right, #ff94c2, #8a2be2);
+  /* background: linear-gradient(to bottom right, #00bcd4, #004d99); */
+  font-weight: bold; /* Optionally bold the text */
+  cursor: pointer; /* Show pointer cursor on hover */
+  position: relative; /* Required for glow effect */
+  overflow: hidden; /* Required for glow effect */
+  animation: glow 1.5s infinite alternate;
+  transition: 0.5s;
+}
+
+.cta__btn:hover {
+  background: #00264d; /* Change background color on hover */
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px #ff94c2, 0 0 10px #ff94c2, 0 0 15px #ff94c2,
+      0 0 20px #ff94c2;
+  }
+  100% {
+    box-shadow: 0 0 10px #ff94c2, 0 0 15px #ff94c2, 0 0 20px #ff94c2,
+      0 0 25px #ff94c2;
+  }
+}
+
+.cta__btn:hover {
+  transform: translateY(-2px); /* Move button up on hover */
+  background: linear-gradient(
+    to bottom right,
+    #8a2be2,
+    #ff94c2
+  ); /* Change gradient on hover */
+}
+
+.article__bg {
+  background-color: #1e1e1e; /* Dark background color */
+  /* Add padding as needed */
+  border-radius: 5px; /* Optional: Add rounded corners */
+}
+
+.article__bg h3 {
+  color: #61afef; /* Color for headings */
+}
+
+.article__bg p {
+  color: #abb2bf; /* Text color for paragraphs */
+}
+
+.article__bg li {
+  color: #98c379; /* Text color for list items */
+}
+
+.article__bg li h3 {
+  color: #e06c75; /* Text color for nested headings */
+}
+
+.article__bg li p {
+  color: #abb2bf; /* Text color for nested paragraphs */
+}
+
+.home__slide__opt > div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  cursor: pointer;
+}
+.home__slide__opt > div:hover {
+  background-color: #ff6347;
+  color: white;
+}
