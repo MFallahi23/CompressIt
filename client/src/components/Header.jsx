@@ -5,18 +5,14 @@ import "./styles/Header.css";
 import useAuth from "../hooks/useAuth";
 import { IoIosPricetags } from "react-icons/io";
 import { useMediaQuery } from "react-responsive";
-import { FaDiceFive, FaQuestionCircle } from "react-icons/fa";
+import { FaQuestionCircle } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoLogIn } from "react-icons/io5";
-import { FaUser, FaMoneyCheck, FaHistory } from "react-icons/fa";
-import { IoIosNotifications } from "react-icons/io";
-import { VscFeedback } from "react-icons/vsc";
-import { IoSettings } from "react-icons/io5";
-import { PiSignOutBold } from "react-icons/pi";
 import { IoIosArrowUp } from "react-icons/io";
-import profilePic from "../assets/default_profile_pic.jpg";
 import ProfileOptions from "./ProfileOptions.jsx";
+import { displayImg } from "../utils/imgUtils.jsx";
+import { getUserRoleLabel } from "../utils/roleUtils.jsx";
 
 const Header = () => {
   const [showNav, setShowNav] = useState(false);
@@ -24,45 +20,27 @@ const Header = () => {
   const [showDesktopOpt, setShowDesktopOpt] = useState(false);
   const { auth } = useAuth();
   const dropDownRef = useRef(null);
+  const menuRef = useRef(null);
 
   const isMobile = useMediaQuery({ query: `(max-width:767px)` });
-
-  // Get user Label
-  const getUserRoleLabel = () => {
-    if (auth?.role === "user") {
-      return (
-        <span className=" text-sm px-1 bg-slate-300 w-fit rounded-lg">
-          Free tier
-        </span>
-      );
-    } else if (auth?.role === "premium") {
-      return <span className=" text-sm pl-1">Premium</span>;
-    } else if (auth?.role === "moderator") {
-      return <span className=" text-sm pl-1">Moderator</span>;
-    } else {
-      return <span className=" text-sm pl-1">Admin</span>;
-    }
-  };
-
-  // Display profile img
-  const displayImg = () => {
-    const profilePic = auth?.profilePic;
-    if (profilePic?.startsWith("https")) {
-      return profilePic;
-    } else {
-      return "http://localhost:3000/images/" + profilePic;
-    }
-  };
-  const [imageUrl, setImageUrl] = useState(displayImg());
+  console.log(auth);
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
-    setImageUrl(displayImg());
+    if (auth?.profilePic) {
+      setImageUrl(displayImg(auth?.profilePic));
+    }
   }, [auth.profilePic]);
 
   //  Handle click outside the dropdown menu
 
   const handleClickOutside = (e) => {
-    if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+    if (
+      dropDownRef.current &&
+      !dropDownRef.current.contains(e.target) &&
+      menuRef.current &&
+      !menuRef.current.contains(e.target)
+    ) {
       setShowDesktopOpt(false);
     }
   };
@@ -93,7 +71,7 @@ const Header = () => {
         <Link to={"/"} className="header__logo flex gap-1 select-none">
           <img src={logo} alt="logo" className=" w-8" />
           <span className="header__logo__text text-xl sm:text-3xl font-bold">
-            Compressive
+            CompressIT
           </span>
         </Link>
         <nav className={`header__nav__desk ${isMobile ? "hide__desktop" : ""}`}>
@@ -102,21 +80,22 @@ const Header = () => {
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"
             >
-              <a href="#">Pricing</a>
+              <a href="#pricing">Pricing</a>
             </li>
             <li
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"
             >
-              <a href="#">FAQ</a>
+              <a href="#faq">FAQ</a>
             </li>
             {auth && Object.entries(auth).length !== 0 ? (
               <>
                 <li className=" relative header__desktop__profile">
                   <div
+                    ref={menuRef}
                     onClick={() => setShowDesktopOpt(!showDesktopOpt)}
                     onBlur={() => setShowDesktopOpt(false)}
-                    className=" cursor-pointer"
+                    className="cursor-pointer"
                   >
                     <img
                       src={imageUrl}
@@ -177,13 +156,13 @@ const Header = () => {
                   <div className="">
                     <img
                       src={imageUrl}
-                      className="w-16 h-16 rounded-full"
+                      className="min-w-10 min-h-10 sm:min-w-10 sm:min-h-10 rounded-full"
                       alt="picture"
                     />
                   </div>
-                  <div className=" flex flex-col">
+                  <div className=" flex flex-col truncate text-xs sm:text-lg">
                     {auth?.username}
-                    {getUserRoleLabel()}
+                    {getUserRoleLabel(auth?.role)}
                   </div>
                 </Link>
               </div>
@@ -195,14 +174,14 @@ const Header = () => {
               className="flex items-center gap-2"
             >
               <IoIosPricetags />
-              <a href="#">Pricing</a>
+              <a href="#pricing">Pricing</a>
             </li>
             <li
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"
             >
               <FaQuestionCircle />
-              <a href="#">FAQ</a>
+              <a href="#faq">FAQ</a>
             </li>
             {auth && Object.entries(auth).length !== 0 ? (
               <>

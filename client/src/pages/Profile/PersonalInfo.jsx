@@ -1,48 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import profilePic from "../../assets/default_profile_pic.jpg";
 import useAuth from "../../hooks/useAuth";
-import { Link } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import "./styles/profile.css";
-
 import ModalProfile from "../../components/ModalProfile";
+import { getUserRoleLabel } from "../../utils/roleUtils.jsx";
+import { displayImg } from "../../utils/imgUtils.jsx";
 
 const PersonalInfo = () => {
   const { auth } = useAuth();
-  console.log(auth);
   const [showModal, setShowModal] = useState(false);
 
   // display usr img
-  const displayImg = () => {
-    const profilePic = auth?.profilePic;
-    if (profilePic?.startsWith("https")) {
-      return profilePic;
-    } else {
-      return "http://localhost:3000/images/" + profilePic;
-    }
-  };
+  // const displayImg = () => {
+  //   const profilePic = auth?.profilePic;
+  //   if (profilePic?.startsWith("https")) {
+  //     return profilePic;
+  //   } else {
+  //     return "http://localhost:3000/images/" + profilePic;
+  //   }
+  // };
 
-  const [imageUrl, setImageUrl] = useState(displayImg());
-  // Get user Label
-  const getUserRoleLabel = () => {
-    if (auth?.role === "user") {
-      return (
-        <span className=" text-sm px-1 bg-slate-300 w-fit rounded-lg">
-          Free tier
-        </span>
-      );
-    } else if (auth?.role === "premium") {
-      return <span className=" text-sm pl-1">Premium</span>;
-    } else if (auth?.role === "moderator") {
-      return <span className=" text-sm pl-1">Moderator</span>;
-    } else {
-      return (
-        <span className=" text-sm px-1 bg-amber-400 w-fit rounded-lg">
-          Admin
-        </span>
-      );
-    }
-  };
+  const [imageUrl, setImageUrl] = useState(displayImg(auth?.profilePic));
 
   const formatDate = (date) => {
     const currentDate = new Date();
@@ -70,7 +48,7 @@ const PersonalInfo = () => {
   };
 
   useEffect(() => {
-    setImageUrl(displayImg());
+    setImageUrl(displayImg(auth?.profilePic));
   }, [auth.profilePic]);
 
   return (
@@ -84,16 +62,17 @@ const PersonalInfo = () => {
           <div className="personal-info__preview__img">
             <img
               src={imageUrl}
+              referrerpolicy="no-referrer"
               alt="profile pic"
-              className="w-32 h-32 rounded-full"
+              className="min-w-16 min-h-16 sm:min-w-32 sm:min-h-32 rounded-full"
             />
           </div>
           <div className="personal-info__preview__text">
-            <div className="personal-info__preview__username text-2xl truncate">
+            <div className="personal-info__preview__username text-2xl truncate max-w-[10rem]">
               {auth?.username}
             </div>
             <div className="personal-info__preview__status text-blackColor">
-              {getUserRoleLabel()}
+              {getUserRoleLabel(auth?.role)}
             </div>
           </div>
         </div>
@@ -128,6 +107,22 @@ const PersonalInfo = () => {
             <p className=" truncate">{formatDate(auth?.createdAt)}</p>
           </div>
         </div>
+      </div>
+      <div className="profile__optional flex flex-row items-center justify-center gap-5">
+        {auth?.role === "admin" ? (
+          <button className="transition p-2 rounded-md text-xl px-10 mt-8 bg-rose-800">
+            Admin Pannel
+          </button>
+        ) : (
+          ""
+        )}
+        {auth?.role === "user" ? (
+          <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-8">
+            Upgrade
+          </button>
+        ) : (
+          ""
+        )}
       </div>
     </section>
   );

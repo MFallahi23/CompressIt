@@ -8,7 +8,7 @@ CREATE TABLE usr(
     email VARCHAR(255) NOT NULL UNIQUE,
     role user_role DEFAULT 'user',
     password VARCHAR(255) NOT NULL,
-    occupation VARCHAR(255),
+    occupation VARCHAR(255) DEFAULT 'none',
     refresh_token VARCHAR(255),
     resetpasswordtoken VARCHAR(255),
     resetpasswordtokenexpiry TIMESTAMPTZ,

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import pool from "./helpers/db.js";
 import cors from "cors";
 import userRoute from "./routes/users.router.js";
+import compressRoute from "./routes/compress.routes.js";
 import corsOptions from "./config/corsOptions.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import credentials from "./middleware/credentials.js";
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
   res.send("hello");
 });
 app.use("/api/user", userRoute);
+app.use("/api/compress", compressRoute);
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });

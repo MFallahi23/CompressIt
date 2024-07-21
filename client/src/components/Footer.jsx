@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="footer__logo flex items-center justify-center">
             <img src={logo} alt="logo" className=" w-8 " />
             <span className="footer__logo__text text-xl font-semibold">
-              Compressive
+              CompressIT
             </span>
           </div>
           <p className="text-s">Make money with web app optimization</p>

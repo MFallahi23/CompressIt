@@ -1,0 +1,43 @@
+.compress__download__all {
+  background: linear-gradient(135deg, #f7d07a, #f2b600, #f9b300);
+  color: #333; /* Dark text for better contrast */
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.compress__download__all:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.compress__img__ctn {
+  position: relative;
+}
+.compress__overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  transition: 0.2s ease;
+  background-color: rgba(51, 51, 51, 0);
+  letter-spacing: 0.3em;
+}
+.compress__overlay p {
+  opacity: 0;
+}
+
+.compress__img__ctn:hover .compress__overlay {
+  background-color: rgba(51, 51, 51, 0.9);
+}
+.compress__img__ctn:hover .compress__overlay p {
+  opacity: 1;
+}

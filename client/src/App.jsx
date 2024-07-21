@@ -19,6 +19,8 @@ import History from "./pages/Profile/History.jsx";
 import Notifications from "./pages/Profile/Notifications.jsx";
 import Feedback from "./pages/Profile/Feedback.jsx";
 import Settings from "./pages/Profile/Settings.jsx";
+import Compress from "./pages/Compress.jsx";
+
 function App() {
   return (
     <>
@@ -33,7 +35,15 @@ function App() {
             <Route index element={<Home />}></Route>
 
             {/* Protected Routes */}
-
+            <Route
+              element={
+                <RequireAuth
+                  allowedRoles={["admin", "moderator", "premium", "user"]}
+                /> // REMOVE user
+              }
+            >
+              <Route path="compress" element={<Compress />} />
+            </Route>
             {/* Profile */}
             <Route
               element={
