@@ -17,6 +17,8 @@ import {
 } from "../controllers/resetPassword.controller.js";
 import updateUser from "../controllers/updateUser.controller.js";
 import { upload } from "../config/upload.js";
+import getNotifications from "../controllers/getNotifications.controller.js";
+import addFeedback from "../controllers/addFeedback.controller.js";
 
 const router = express.Router();
 
@@ -40,6 +42,9 @@ router.post(
   validateUpdate,
   updateUser
 );
+router.post("/feedback", verifyJWT, addFeedback);
+router.get("/notifications", verifyJWT, getNotifications);
+
 router.get("/logout", logout);
 
 export default router;

@@ -15,8 +15,15 @@ img {
   max-width: 100%;
 }
 /* logo */
-.header__logo img {
+/* .header__logo img {
   filter: invert(1) sepia(1) saturate(5) hue-rotate(40deg) brightness(1.3);
+} */
+/* .header__logo img {
+  filter: invert(100%) brightness(1000%);
+} */
+.header__logo img {
+  filter: invert(58%) sepia(91%) saturate(629%) hue-rotate(-36deg)
+    brightness(100%);
 }
 
 /* Main structure */

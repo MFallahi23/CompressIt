@@ -8,10 +8,13 @@ import deleteAllDownloadedFiles from "../helpers/deleteDownloads.js";
 import { extname } from "path";
 import { errorHandler } from "../helpers/error.js";
 
-const regex = /\.(jpg|jpeg|svg|png|gif|bmp|webp|tiff|ico)&/;
+import compressImages from "../helpers/compressImages.js";
+import { defineLimit } from "../helpers/getRole.js";
+
+const regex = /\.(jpg|jpeg|svg|png|gif|bmp|webp|tiff|ico|heic)&/;
 
 const processfilename = (filename) => {
-  if (regex.test(filename)) {
+  if (regex.test(filename.toLowerCase())) {
     const arr = filename.split(regex);
     arr.pop();
     const cleanedFilename = arr.join(".");
@@ -21,9 +24,24 @@ const processfilename = (filename) => {
   }
 };
 
+const requestPromise = (options, next) => {
+  return new Promise((resolve, reject) => {
+    request(options, (error, response, html) => {
+      if (error) {
+        reject(error);
+      } else if (response.statusCode === 200) {
+        resolve(html);
+      } else {
+        reject(new Error(`Failed with status code ${response.statusCode}`));
+      }
+    });
+  });
+};
+
 const compress = async (req, res, next) => {
   try {
     const userId = req.user;
+    const limit = await defineLimit(userId, next);
     await deleteAllDownloadedFiles(userId);
     // const url =
     //   "https://www.scrapingbee.com/blog/web-scraping-101-with-python/";
@@ -49,30 +67,38 @@ const compress = async (req, res, next) => {
       proxy: proxyGenerator(),
     };
 
-    request(options, (error, response, html) => {
-      if (!error && response.statusCode == 200) {
-        const $ = load(html);
-        const imgPromises = [];
-        $("img").each((i, img) => {
-          const src = $(img).attr("src");
-          if (src) {
-            const imageUrl = new URL(src, url).toString();
-            const ext = extname(imageUrl);
+    const html = await requestPromise(options);
 
-            const filename = processfilename(`downloaded_image_${i}${ext}`);
-            imgPromises.push(downloadImg(imageUrl, filename, userId));
-            imgs.push(filename);
-          }
-        });
-        Promise.all(imgPromises)
-          .then((downloadedImagesNames) => {
-            res.json({ imgs, userId });
-          })
-          .catch(next);
-      } else {
-        console.log(response.statusCode);
-        next(error || new Error("Failed to fetch the page"));
+    const $ = load(html);
+    const imgPromises = [];
+    $("img").each((i, img) => {
+      if (i > limit) {
+        return false;
       }
+      const src = $(img).attr("src");
+      if (src) {
+        const imageUrl = new URL(src, url).toString();
+        const ext = extname(imageUrl);
+
+        const filename = processfilename(`compressed_${i}${ext}`);
+        imgPromises.push(downloadImg(imageUrl, filename, userId));
+        imgs.push(filename);
+      }
+    });
+
+    await Promise.all(imgPromises);
+    const changedNames = imgs.map((filename) => {
+      const ext = extname(filename).slice(1).toLowerCase(); // Get the file extension
+      if (["webp", "tiff", "bmp", "ico", "heic"].includes(ext)) {
+        return filename.replace(`.${ext}`, ".jpg"); // Change the extension to .jpg
+      }
+      return filename;
+    });
+    const [sumOriginalSizes, sumOPtimizedSizes] = await compressImages(userId);
+    res.json({
+      imgs: changedNames,
+      userId,
+      sizes: { sumOriginalSizes, sumOPtimizedSizes },
     });
   } catch (error) {
     console.error("catch error:", error);

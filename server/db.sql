@@ -1,10 +1,10 @@
 CREATE DATABASE compressive;
 
-CREATE TYPE user_role AS ENUM ('user','admin','premium','moderator');
+CREATE TYPE user_role AS ENUM ('user','starter','admin','premium','vip');
 
 CREATE TABLE usr(
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     role user_role DEFAULT 'user',
     password VARCHAR(255) NOT NULL,
@@ -17,5 +17,18 @@ CREATE TABLE usr(
     usage_count INTEGER DEFAULT 0
 );
 
--- test value
-INSERT INTO usr (username,email,role,password) VALUES ('Max','mohcinefallahi23@gmail.com','admin','FNWOUFNFISIWNJ');
+
+CREATE TABLE notifications (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    roles TEXT[] NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE feedbacks (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    content TEXT NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

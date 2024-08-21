@@ -15,7 +15,8 @@ const getUsers = async (req, res, next) => {
 };
 const getUser = async (req, res, next) => {
   try {
-    const userId = req.body.user_id;
+    const userId = req.query.userId;
+
     // Query the user from the usr table
     const user = await pool.query("SELECT * FROM usr WHERE user_id = $1", [
       userId,

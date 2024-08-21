@@ -51,26 +51,26 @@ const updateUser = async (req, res, next) => {
       let query = "UPDATE usr SET ";
       let index = 1;
 
-      if (username !== foundUsername) {
+      if (username && username !== foundUsername) {
         updates.push(`username=$${index}`);
         values.push(username);
         index++;
       }
 
-      if (email !== foundEmail) {
+      if (email && email !== foundEmail) {
         updates.push(`email=$${index}`);
         values.push(email);
         index++;
       }
 
-      if (profilePic !== foundPic) {
+      if (profilePic && profilePic !== foundPic) {
         updates.push(`profile_picture_filename=$${index}`);
         values.push(profilePic);
 
         index++;
       }
 
-      if (occupation !== foundOccupation) {
+      if (occupation && occupation !== foundOccupation) {
         updates.push(`occupation=$${index}`);
         values.push(occupation);
         index++;

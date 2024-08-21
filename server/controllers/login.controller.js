@@ -71,7 +71,7 @@ const googleAuth = async (req, res, next) => {
     if (user.rows.length === 0) {
       const modifiedUsername =
         name.split(" ").join("").toLowerCase() +
-        crypto.randomBytes(6).toString("base64");
+        crypto.randomBytes(3).toString("base64");
       const generatedPassword = crypto.randomBytes(16).toString("base64");
 
       const result = await pool.query(

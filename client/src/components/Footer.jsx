@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.svg";
+import logo from "../../public/logo2.svg";
 import twitter_img from "../assets/twitter-pp.jpg";
 import "./styles/Footer.css";
 const Footer = () => {

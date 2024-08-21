@@ -5,6 +5,8 @@ import "./styles/profile.css";
 import ModalProfile from "../../components/ModalProfile";
 import { getUserRoleLabel } from "../../utils/roleUtils.jsx";
 import { displayImg } from "../../utils/imgUtils.jsx";
+import { Link } from "react-router-dom";
+import formatDate from "../../utils/dateFormatting.jsx";
 
 const PersonalInfo = () => {
   const { auth } = useAuth();
@@ -19,33 +21,9 @@ const PersonalInfo = () => {
   //     return "http://localhost:3000/images/" + profilePic;
   //   }
   // };
+  console.log(auth);
 
   const [imageUrl, setImageUrl] = useState(displayImg(auth?.profilePic));
-
-  const formatDate = (date) => {
-    const currentDate = new Date();
-    const givenDate = new Date(date);
-    const currentYear = currentDate.getFullYear();
-    const givenYear = givenDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const givenMonth = givenDate.getMonth();
-    const currentDay = currentDate.getDate();
-    const givenDay = givenDate.getDate();
-
-    const yearsDiff = currentYear - givenYear;
-    const monthsDiff = currentMonth - givenMonth;
-    const daysDiff = currentDay - givenDay;
-
-    if (yearsDiff !== 0) {
-      return `${yearsDiff} year(s) ago`;
-    } else if (monthsDiff !== 0) {
-      return `${monthsDiff} month(s) ago`;
-    } else if (daysDiff !== 0) {
-      return `${daysDiff} day(s) ago`;
-    } else {
-      return "Today";
-    }
-  };
 
   useEffect(() => {
     setImageUrl(displayImg(auth?.profilePic));
@@ -62,13 +40,13 @@ const PersonalInfo = () => {
           <div className="personal-info__preview__img">
             <img
               src={imageUrl}
-              referrerpolicy="no-referrer"
+              referrerPolicy="no-referrer"
               alt="profile pic"
-              className="min-w-16 min-h-16 sm:min-w-32 sm:min-h-32 rounded-full"
+              className="max-[400px]:h-10 max-[400px]:w-10 h-16 w-16 sm:w-32 sm:h-32 rounded-full"
             />
           </div>
           <div className="personal-info__preview__text">
-            <div className="personal-info__preview__username text-2xl truncate max-w-[10rem]">
+            <div className="personal-info__preview__username max-[400px]:text-xs text-2xl truncate max-w-[10rem]">
               {auth?.username}
             </div>
             <div className="personal-info__preview__status text-blackColor">
@@ -108,21 +86,73 @@ const PersonalInfo = () => {
           </div>
         </div>
       </div>
-      <div className="profile__optional flex flex-row items-center justify-center gap-5">
+      <div className="mt-8">
+        {auth?.role === "user" ? (
+          <div className="flex flex-col gap-2 items-center">
+            <p className="text-lg">
+              You're using our{" "}
+              <span className="font-bold text-orange-500">free</span> trial
+            </p>
+            <p>Compressions left: 4</p>
+          </div>
+        ) : auth?.role === "admin" ? (
+          <div className="flex flex-col items-center">
+            <p className="text-lg">
+              Hey Max,you're the{" "}
+              <span className="font-bold text-orange-500">Admin</span>, and what
+              a great app you've made, here are some stats:
+            </p>
+          </div>
+        ) : auth?.role === "vip" ? (
+          <div className="flex flex-col items-center">
+            <p className="text-lg">
+              You're a <span className=" font-bold text-orange-500">vip</span> ,
+              you have access to all the functionalities
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            <p className="text-lg text-center">
+              You're using our{" "}
+              <span className=" font-bold text-orange-500">{auth?.role}</span>{" "}
+              compression service,
+              <span>
+                {" "}
+                {auth?.role === "premium"
+                  ? "You can compress up to 5000 images and 5GB per one compression "
+                  : "You can compress maximum 1000 images and 1GB per compression"}
+              </span>
+            </p>
+
+            {auth?.role === "starter" && (
+              <button className="cta__btn p-2 rounded-md mt-5">
+                Get premium
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="profile__optional flex flex-col sm:flex-row items-center justify-center gap-5 mt-2">
         {auth?.role === "admin" ? (
-          <button className="transition p-2 rounded-md text-xl px-10 mt-8 bg-rose-800">
+          <Link
+            className="transition p-2 rounded-md text-xl px-10 mt-1 bg-rose-800"
+            to={"/dashboard"}
+          >
             Admin Pannel
-          </button>
+          </Link>
         ) : (
           ""
         )}
-        {auth?.role === "user" ? (
-          <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-8">
+        {auth?.role === "user" || auth?.role === "starter" ? (
+          <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-1">
             Upgrade
           </button>
         ) : (
           ""
         )}
+        <button className="bg-red-800 p-2 rounded-md font-bold text-xl mt-1 opacity-80">
+          Delete account
+        </button>
       </div>
     </section>
   );

@@ -13,10 +13,11 @@ import faqData from "../data/faqData";
 
 import "./styles/home.css";
 import Pricing from "../components/Pricing";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [expandedItems, setExpandedItems] = useState({});
-
+  const navigate = useNavigate();
   // Activate slides
   const toggleSlide = (index) => {
     setActiveSlide(index);
@@ -41,7 +42,10 @@ const Home = () => {
             performance of your websites and earn money by speeding up existing
             websites
           </p>
-          <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-8">
+          <button
+            className="cta__btn transition rounded-md text-xl p-2 px-10 mt-8"
+            onClick={() => navigate("/pricing")}
+          >
             Get started
           </button>
         </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import logo from "../assets/logo.svg";
+import logo from "../../public/logo2.svg";
 import { Link } from "react-router-dom";
 import "./styles/Header.css";
 import useAuth from "../hooks/useAuth";
@@ -13,7 +13,7 @@ import { IoIosArrowUp } from "react-icons/io";
 import ProfileOptions from "./ProfileOptions.jsx";
 import { displayImg } from "../utils/imgUtils.jsx";
 import { getUserRoleLabel } from "../utils/roleUtils.jsx";
-
+import { FaFileImage } from "react-icons/fa";
 const Header = () => {
   const [showNav, setShowNav] = useState(false);
   const [showProfileOpt, setShowProfileOpt] = useState(false);
@@ -23,7 +23,6 @@ const Header = () => {
   const menuRef = useRef(null);
 
   const isMobile = useMediaQuery({ query: `(max-width:767px)` });
-  console.log(auth);
   const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
@@ -80,7 +79,13 @@ const Header = () => {
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"
             >
-              <a href="#pricing">Pricing</a>
+              <Link to={"/compress"}>Compress</Link>
+            </li>
+            <li
+              onClick={() => setShowNav(false)}
+              className="flex items-center gap-2"
+            >
+              <Link to={"/pricing"}> Pricing</Link>
             </li>
             <li
               onClick={() => setShowNav(false)}
@@ -147,35 +152,43 @@ const Header = () => {
         >
           <ul className="header__list flex gap-2 select-none">
             {auth && Object.entries(auth).length !== 0 ? (
-              <div>
-                <Link
-                  onClick={() => setShowNav(false)}
-                  to={"/profile"}
-                  className="flex items-center gap-2 header__profile"
-                >
-                  <div className="">
-                    <img
-                      src={imageUrl}
-                      className="min-w-10 min-h-10 sm:min-w-10 sm:min-h-10 rounded-full"
-                      alt="picture"
-                    />
-                  </div>
-                  <div className=" flex flex-col truncate text-xs sm:text-lg">
-                    {auth?.username}
-                    {getUserRoleLabel(auth?.role)}
-                  </div>
-                </Link>
+              <div className="">
+                <div>
+                  <Link
+                    onClick={() => setShowNav(false)}
+                    to={"/profile"}
+                    className="flex items-center gap-2 header__profile"
+                  >
+                    <div className="">
+                      <img
+                        src={imageUrl}
+                        className="w-10 h-10 sm:min-w-10 sm:min-h-10 rounded-full"
+                        alt="picture"
+                      />
+                    </div>
+                    <div className=" flex flex-col truncate text-xs sm:text-lg max-[350px]:hidden">
+                      {auth?.username}
+                      {getUserRoleLabel(auth?.role)}
+                    </div>
+                  </Link>
+                </div>
               </div>
             ) : (
               ""
             )}
-            <li
-              onClick={() => setShowNav(false)}
-              className="flex items-center gap-2"
-            >
-              <IoIosPricetags />
-              <a href="#pricing">Pricing</a>
+            <li onClick={() => setShowNav(false)}>
+              <Link className="flex items-center gap-2" to={"/compress"}>
+                <FaFileImage />
+                Compress
+              </Link>
             </li>
+            <li onClick={() => setShowNav(false)}>
+              <Link to={"/pricing"} className="flex items-center gap-2">
+                <IoIosPricetags />
+                <p>Pricing</p>
+              </Link>
+            </li>
+
             <li
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"

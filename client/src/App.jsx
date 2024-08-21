@@ -20,8 +20,14 @@ import Notifications from "./pages/Profile/Notifications.jsx";
 import Feedback from "./pages/Profile/Feedback.jsx";
 import Settings from "./pages/Profile/Settings.jsx";
 import Compress from "./pages/Compress.jsx";
+import Pricing from "./pages/Pricing.jsx";
+import useAuth from "./hooks/useAuth.jsx";
+import User from "./pages/User.jsx";
+import Deleted from "./pages/Deleted.jsx";
 
 function App() {
+  const { auth } = useAuth();
+  console.log(auth);
   return (
     <>
       <Routes>
@@ -32,8 +38,11 @@ function App() {
 
         <Route element={<PersistLogin />}>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Home />}></Route>
-
+            <Route
+              index
+              element={Object.keys(auth).length === 0 ? <Home /> : <Compress />}
+            ></Route>
+            <Route path="/pricing" element={<Pricing />}></Route>
             {/* Protected Routes */}
             <Route
               element={
@@ -64,15 +73,15 @@ function App() {
             </Route>
 
             {/* Dashboard */}
-            <Route
-              element={<RequireAuth allowedRoles={["admin", "moderator"]} />}
-            >
-              <Route path="dashboard" element={<Dashboard />}></Route>
+            <Route element={<RequireAuth allowedRoles={["admin"]} />}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="deleted" element={<Deleted />} />
+              <Route path="user/:id" element={<User />} />
             </Route>
 
-            <Route path="about" element={<About />}></Route>
-            <Route path="unauthorized" element={<Unauthorized />}></Route>
-            <Route path="blog" element={<Blog />}></Route>
+            <Route path="about" element={<About />} />
+            <Route path="unauthorized" element={<Unauthorized />} />
+            <Route path="blog" element={<Blog />} />
           </Route>
         </Route>
         {/* Catch all */}

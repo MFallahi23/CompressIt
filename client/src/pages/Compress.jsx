@@ -1,45 +1,78 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import isValidUrl from "../utils/isValidUrl";
 import { axiosPrivate } from "../api/axios";
 import { displayDownloadedImg } from "../utils/imgUtils";
-import useAuth from "../hooks/useAuth";
 import "./styles/compress.css";
+import CompressWebPage from "../components/CompressWebPage";
+import CompressFolder from "../components/CompressFolder";
+import CompressFile from "../components/CompressFile";
+import CompressWebSite from "../components/CompressWebsite";
+import useAuth from "../hooks/useAuth";
 const Compress = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
   const [imgs, setImages] = useState([]);
+  const { auth } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [sizes, setSizes] = useState(undefined);
+  const [type, setType] = useState("webpage");
 
-  // Function to submit the url to the server
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setError("");
-      setImages([]);
-      setLoading(true);
-      const isValid = isValidUrl(url);
-      if (!isValid) {
-        setError("Invalid URL!");
-        return;
-      }
-      const response = await axiosPrivate.post("/api/compress", { url });
-      const resultImages = response?.data.imgs;
-      const userId = response?.data.userId;
-      setLoading(false);
-      setImages(() => {
-        return resultImages.map((img) => {
-          return `downloaded${userId}/${img}`;
-        });
-      });
-    } catch (error) {
-      setLoading(false);
-      if (error?.response.status === 422) {
-        setError(error?.response?.data.error);
-      } else {
-        setError("An error occured!");
-      }
+  const formatBytes = (bytes) => {
+    const sizeUnits = ["Bytes", "KB", "MB", "GB"];
+    if (bytes === 0) return "0 Byte";
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizeUnits[i]}`;
+  };
 
-      console.log(error);
+  // Function to render the correct content of input part
+  const renderContent = (type) => {
+    switch (type) {
+      case "webpage":
+        return (
+          <CompressWebPage
+            error={error}
+            setError={setError}
+            url={url}
+            setUrl={setUrl}
+            setSizes={setSizes}
+            setImages={setImages}
+            setLoading={setLoading}
+          />
+        );
+      case "folder":
+        return (
+          <CompressFolder
+            error={error}
+            setError={setError}
+            setSizes={setSizes}
+            setImages={setImages}
+            setLoading={setLoading}
+          />
+        );
+      case "file":
+        return (
+          <CompressFile
+            error={error}
+            setError={setError}
+            setSizes={setSizes}
+            setImages={setImages}
+            setLoading={setLoading}
+          />
+        );
+      case "website":
+        return (
+          <CompressWebSite
+            error={error}
+            setError={setError}
+            url={url}
+            setUrl={setUrl}
+            setSizes={setSizes}
+            setImages={setImages}
+            setLoading={setLoading}
+          />
+        );
+      default:
+        return <div>An error has occured, please refresh the page</div>;
     }
   };
 
@@ -65,61 +98,209 @@ const Compress = () => {
       console.error("Error downloading the image");
     }
   };
+
+  // Function that handles download of all images
+  const downloadAllImages = async () => {
+    try {
+      const response = await axiosPrivate.get("/api/compress/downloadAll", {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "images.zip");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading the zip", error);
+    }
+  };
+
+  useEffect(() => {
+    // Cleanup object URLs on unmount
+    return () => {
+      imgs.forEach((image) => URL.revokeObjectURL(displayDownloadedImg(image)));
+    };
+  }, [imgs]);
   return (
     <section className="flex flex-col gap-10 w-[100%] mx-auto mt-10 max-w-[90%] sm:max-w-[600px] md:max-w-[800px] xl:max-w-[1000px] my-10 p-5">
-      {error && (
-        <div className=" text-center bg-red-700 p-1 rounded-md">{error}</div>
+      <h1 className=" text-3xl sm:text-4xl md:text-5xl  self-center text-center font-extrabold">
+        Welcome, <br />
+        {auth?.username}
+      </h1>
+      {auth?.role === "user" ? (
+        <div className="flex flex-col gap-2 items-center">
+          <p className="text-lg text-center">
+            You're using our{" "}
+            <span className="font-bold text-orange-500">free</span> trial. You
+            have a limited number of compressions and you can compress maximum
+            90 images and 10MB per compression
+          </p>
+          <p>Compressions left: 4</p>
+          <button className="cta__btn  p-2 rounded-md">
+            Get unlimited compresions
+          </button>
+        </div>
+      ) : auth?.role === "admin" ? (
+        <div className="flex flex-col items-center">
+          <p className="text-lg">
+            Hey Max,you're the{" "}
+            <span className="font-bold text-orange-500">Admin</span>, and what a
+            great app you've made, here are some stats:
+          </p>
+          <div className="flex flex-col gap-1">
+            <h1 className=" text-3xl text-center mb-4">
+              Compressor Statistics
+            </h1>
+            <div className="">Number of users:</div>
+            <div className="">
+              How many users have used the compressor today:
+            </div>
+            <div className="">
+              {" "}
+              How many users have used the webpage compressor today:
+            </div>
+            <div className="">
+              {" "}
+              How many users have used the website compressor today:
+            </div>
+            <div className="">
+              {" "}
+              How many users have used the folder compressor today:
+            </div>
+            <div className="">
+              {" "}
+              How many users have used the file compressor today:
+            </div>
+          </div>
+        </div>
+      ) : auth?.role === "vip" ? (
+        <div className="flex flex-col items-center">
+          <p className="text-lg">
+            You're a <span className=" font-bold text-orange-500">vip</span> ,
+            you have access to all the functionalities
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center">
+          <p className="text-lg text-center">
+            You're using our{" "}
+            <span className=" font-bold text-orange-500">{auth?.role}</span>{" "}
+            compression service,
+            <span>
+              {" "}
+              {auth?.role === "premium"
+                ? "You can compress up to 4000 images and 5GB per one compression "
+                : "You can compress maximum 900 images and 1GB per compression"}
+            </span>
+          </p>
+
+          {auth?.role === "starter" && (
+            <button className="cta__btn p-2 rounded-md mt-5">
+              Get premium
+            </button>
+          )}
+        </div>
       )}
-      <h1 className="text-5xl text-center">Paste your webpage url here</h1>
-      <form
-        action=""
-        className=" flex  gap-5 flex-col w-[100%] md:flex-row"
-        onSubmit={(e) => handleSubmit(e)}
-      >
-        <input
-          type="text"
-          required
-          className="p-2 rounded-md flex-1 text-black"
-          value={url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-            setError("");
-          }}
-        />
-        <button className="cta__btn p-2 rounded-md text-nowrap text-md basis-full md:basis-auto">
-          Speed up your website
-        </button>
-      </form>
+
+      <div className="flex self-center  bg-whiteBg text-blackColor rounded-md w-[100%] max-[400px]:text-sm">
+        <div
+          className={`${
+            type === "webpage" ? "activeCompress" : ""
+          } p-3 flex-1 flex justify-center rounded-md cursor-pointer transition`}
+          onClick={() => setType("webpage")}
+        >
+          Webpage
+        </div>
+        <div
+          className={`${
+            type === "folder" ? "activeCompress" : ""
+          } p-3 flex-1 flex justify-center rounded-md cursor-pointer transition`}
+          onClick={() => setType("folder")}
+        >
+          Folder
+        </div>
+        <div
+          className={`${
+            type === "file" ? "activeCompress" : ""
+          } p-3 flex-1 flex justify-center rounded-md cursor-pointer transition`}
+          onClick={() => setType("file")}
+        >
+          File
+        </div>
+        <div
+          className={`${
+            type === "website" ? "activeCompress" : ""
+          } p-3 flex-1 flex justify-center rounded-md cursor-pointer transition`}
+          onClick={() => setType("website")}
+        >
+          Website
+        </div>
+      </div>
+      {renderContent(type)}
+
       <div className="mt-5 flex flex-col items-center">
         <h2>The results will appear here</h2>
         {imgs && imgs.length > 0 && (
-          <button className="compress__download__all p-2 rounded-md my-4 mb-10">
+          <button
+            className="compress__download__all p-2 rounded-md my-4 mb-10"
+            onClick={downloadAllImages}
+          >
             Download All
           </button>
         )}
+        {sizes && (
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center">
+              <div className=" text-3xl">
+                Orignal files size: {formatBytes(sizes.sumOriginalSizes)}
+              </div>
+              <div className=" text-3xl">
+                Result: {formatBytes(sizes.sumOPtimizedSizes)}
+              </div>
+            </div>
+            <div className="compression-ratio p-3 rounded-full h-24 w-24 flex items-center justify-center text-blackColor my-5 text-2xl">
+              {(
+                ((sizes.sumOriginalSizes - sizes.sumOPtimizedSizes) /
+                  sizes.sumOriginalSizes) *
+                100
+              ).toFixed(2)}
+              %
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 place-items-center lg:grid-cols-3 xl:grid-cols-4">
-          {!loading
-            ? imgs && imgs.length > 0
-              ? imgs?.map((src, i) => {
-                  return (
-                    <div
-                      className="compress__img__ctn w-full cursor-pointer flex justify-center items-center"
-                      onClick={() => downloadImage(src)}
-                    >
-                      <img
-                        key={i}
-                        src={displayDownloadedImg(src)}
-                        alt="compressed images"
-                        className=""
-                      />
-                      <div className="compress__overlay flex justify-center items-center">
-                        <p className=" text-3xl md:text-xl">Download Image</p>
-                      </div>
+          {!loading ? (
+            imgs && imgs.length > 0 ? (
+              imgs?.map((src, i) => {
+                return (
+                  <div
+                    className="compress__img__ctn w-full cursor-pointer flex justify-center items-center"
+                    onClick={() => downloadImage(src)}
+                    key={i}
+                  >
+                    <img
+                      src={displayDownloadedImg(src)}
+                      alt="compressed images"
+                      className=""
+                    />
+                    <div className="compress__overlay flex justify-center items-center">
+                      <p className=" text-3xl md:text-xl">Download Image</p>
                     </div>
-                  );
-                })
-              : ""
-            : "Loading..."}
+                  </div>
+                );
+              })
+            ) : (
+              ""
+            )
+          ) : (
+            <div className=" text-3xl fixed top-0 left-0 bottom-0 right-0 w-[100%] bg-slate-600 bg-opacity-90 flex justify-center items-center flex-col">
+              <div className="">The compression can take some time</div>
+              <div className="loader mt-4"></div>
+              <div className="mt-4">Please wait a moment</div>
+            </div>
+          )}
         </div>
       </div>
     </section>

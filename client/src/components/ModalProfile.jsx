@@ -160,8 +160,8 @@ const ModalProfile = ({ showModal, setShowModal }) => {
       >
         <div className=" bg-slate-100 h-20 sm:rounded-t-lg"></div>
         <div className="p-10">
-          <div className=" absolute top-10 left-[50%] translate-x-[-50%] flex flex-col">
-            <div className="personal-info__preview__img">
+          <div className=" absolute top-10 right-[50%] translate-x-[50%]  flex flex-col">
+            <div className="personal-info__preview__img flex flex-col items-center">
               <img
                 src={fileUrl || imageUrl}
                 alt="profile pic"
@@ -169,7 +169,7 @@ const ModalProfile = ({ showModal, setShowModal }) => {
               />
             </div>
             <div className="personal-info__preview__text">
-              <div className="personal-info__preview__username text-3xl">
+              <div className="personal-info__preview__username text-xl sm:text-3xl">
                 {auth?.username}
               </div>
               <div className="personal-info__preview__status text-blackColor text-center">
@@ -178,7 +178,7 @@ const ModalProfile = ({ showModal, setShowModal }) => {
             </div>
           </div>
           <form
-            className="profile__modal__form mt-28 min-w-[400px] "
+            className="profile__modal__form mt-28 max-[400px]:text-xs sm:min-w-[400px]"
             onSubmit={handleUpdate}
           >
             <p
@@ -266,11 +266,11 @@ const ModalProfile = ({ showModal, setShowModal }) => {
                 accept="image/*"
                 onChange={handleFileChange}
               />
-              <img
+              {/* <img
                 src={fileUrl || imageUrl}
                 alt="profile pic"
                 className="w-10 h-10 rounded-full"
-              />
+              /> */}
               <button
                 type="button"
                 className=" border-2 rounded p-1"

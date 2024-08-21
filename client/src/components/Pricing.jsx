@@ -2,7 +2,7 @@ import React from "react";
 import { FaCheck } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 
-const Pricing = ({ type }) => {
+const Pricing = ({ type, handleBuy }) => {
   return (
     <article
       className={` ${
@@ -74,7 +74,10 @@ const Pricing = ({ type }) => {
           Large web app compression (50GB+)
         </li>
       </ul>
-      <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-8 self-center">
+      <button
+        className="cta__btn transition p-2 rounded-md text-xl px-10 mt-8 self-center"
+        onClick={() => handleBuy(type === "premium")}
+      >
         Get started
       </button>
       <p className="self-center mt-4 opacity-60">Pay once, profit forever</p>

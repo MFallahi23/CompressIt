@@ -31,34 +31,7 @@ const ProfileOptions = ({ setShowNav, setShowDesktopOpt }) => {
 
         <h2 className="text-xl">My Profile</h2>
       </Link>
-      <Link
-        to={"/profile/billing"}
-        onClick={() => {
-          setShowNav(false);
-          setShowDesktopOpt(false);
-        }}
-        className=" flex items-center gap-2 p-1"
-      >
-        <div className="text-xl">
-          <FaMoneyCheck />
-        </div>
 
-        <h2 className="text-xl">Billing</h2>
-      </Link>
-      <Link
-        to={"/profile/history"}
-        onClick={() => {
-          setShowNav(false);
-          setShowDesktopOpt(false);
-        }}
-        className=" flex items-center gap-2 p-1"
-      >
-        <div className="text-xl">
-          <FaHistory />
-        </div>
-
-        <h2 className="text-xl">History</h2>
-      </Link>
       <Link
         to={"/profile/notifications"}
         onClick={() => {
@@ -87,20 +60,7 @@ const ProfileOptions = ({ setShowNav, setShowDesktopOpt }) => {
 
         <h2 className="text-xl">Feedback</h2>
       </Link>
-      <Link
-        to={"/profile/settings"}
-        onClick={() => {
-          setShowNav(false);
-          setShowDesktopOpt(false);
-        }}
-        className=" flex items-center gap-2 p-1 mb-1"
-      >
-        <div className="text-xl">
-          <IoSettings />
-        </div>
 
-        <h2 className="text-xl">Settings</h2>
-      </Link>
       <hr />
       <div
         className=" flex items-center gap-2 p-1 cursor-pointer mt-1 header__log-out"

@@ -4,3 +4,8 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.footer__logo img {
+  filter: invert(58%) sepia(91%) saturate(629%) hue-rotate(-36deg)
+    brightness(100%);
+}

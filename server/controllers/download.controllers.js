@@ -7,14 +7,13 @@ const __dirname = dirname(__filename);
 const download = (req, res, next) => {
   const userId = req.user;
   const { imageName } = req.params;
-  console.log(imageName);
   res.download(
     path.join(
       __dirname,
       "..",
       "images",
-      "downloaded",
-      `downloaded${userId}`,
+      "compressed",
+      `compressed${userId}`,
       imageName
     )
   );
