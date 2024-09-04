@@ -10,6 +10,8 @@ import { errorHandler } from "../helpers/error.js";
 
 import compressImages from "../helpers/compressImages.js";
 import { defineLimit } from "../helpers/getRole.js";
+import pool from "../helpers/db.js";
+import { query } from "express";
 
 const regex = /\.(jpg|jpeg|svg|png|gif|bmp|webp|tiff|ico|heic)&/;
 
@@ -95,6 +97,10 @@ const compress = async (req, res, next) => {
       return filename;
     });
     const [sumOriginalSizes, sumOPtimizedSizes] = await compressImages(userId);
+    await pool.query(
+      "UPDATE usr SET usage_count = usage_count+1, last_active = NOW() WHERE user_id=$1",
+      [userId]
+    );
     res.json({
       imgs: changedNames,
       userId,

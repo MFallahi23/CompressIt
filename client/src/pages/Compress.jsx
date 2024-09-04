@@ -16,7 +16,7 @@ const Compress = () => {
   const [loading, setLoading] = useState(false);
   const [sizes, setSizes] = useState(undefined);
   const [type, setType] = useState("webpage");
-
+  const [usageCount, setUsageCount] = useState(0);
   const formatBytes = (bytes) => {
     const sizeUnits = ["Bytes", "KB", "MB", "GB"];
     if (bytes === 0) return "0 Byte";
@@ -118,11 +118,28 @@ const Compress = () => {
   };
 
   useEffect(() => {
+    // Get usage count
+    const getUser = async () => {
+      try {
+        const response = await axiosPrivate.get("/api/user/getusagecount");
+        setUsageCount(response.data.usage_count);
+      } catch (error) {
+        if (error.message) {
+          setError(error.message);
+        }
+        console.error(error);
+      }
+    };
+    getUser();
+  }, [loading]);
+
+  useEffect(() => {
     // Cleanup object URLs on unmount
     return () => {
       imgs.forEach((image) => URL.revokeObjectURL(displayDownloadedImg(image)));
     };
   }, [imgs]);
+
   return (
     <section className="flex flex-col gap-10 w-[100%] mx-auto mt-10 max-w-[90%] sm:max-w-[600px] md:max-w-[800px] xl:max-w-[1000px] my-10 p-5">
       <h1 className=" text-3xl sm:text-4xl md:text-5xl  self-center text-center font-extrabold">
@@ -137,7 +154,7 @@ const Compress = () => {
             have a limited number of compressions and you can compress maximum
             90 images and 10MB per compression
           </p>
-          <p>Compressions left: 4</p>
+          <p>Compressions left: {4 - usageCount}</p>
           <button className="cta__btn  p-2 rounded-md">
             Get unlimited compresions
           </button>
@@ -145,35 +162,10 @@ const Compress = () => {
       ) : auth?.role === "admin" ? (
         <div className="flex flex-col items-center">
           <p className="text-lg">
-            Hey Max,you're the{" "}
+            Hey Max, you're the{" "}
             <span className="font-bold text-orange-500">Admin</span>, and what a
-            great app you've made, here are some stats:
+            great app you've made!
           </p>
-          <div className="flex flex-col gap-1">
-            <h1 className=" text-3xl text-center mb-4">
-              Compressor Statistics
-            </h1>
-            <div className="">Number of users:</div>
-            <div className="">
-              How many users have used the compressor today:
-            </div>
-            <div className="">
-              {" "}
-              How many users have used the webpage compressor today:
-            </div>
-            <div className="">
-              {" "}
-              How many users have used the website compressor today:
-            </div>
-            <div className="">
-              {" "}
-              How many users have used the folder compressor today:
-            </div>
-            <div className="">
-              {" "}
-              How many users have used the file compressor today:
-            </div>
-          </div>
         </div>
       ) : auth?.role === "vip" ? (
         <div className="flex flex-col items-center">

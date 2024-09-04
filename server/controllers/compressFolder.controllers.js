@@ -19,6 +19,10 @@ const compressFolder = async (req, res, next) => {
       return filename;
     });
     const [sumOriginalSizes, sumOPtimizedSizes] = await compressImages(userId);
+    await pool.query(
+      "UPDATE usr SET usage_count = usage_count+1, last_active = NOW() WHERE user_id=$1",
+      [userId]
+    );
     res.status(200).json({
       imgs: changedNames,
       userId,
@@ -29,24 +33,3 @@ const compressFolder = async (req, res, next) => {
   }
 };
 export default compressFolder;
-
-// {
-//   fieldname: 'files',
-//   originalname: 'paragraphPage.png',
-//   encoding: '7bit',
-//   mimetype: 'image/png',
-//   destination: '/Users/mac/Documents/Программирование/ReactPortfolio/ReactCompressor/server/images/downloaded/downloaded1739d7e3-0510-4236-bf38-3162a833e61c',
-//   filename: 'compressed_19.png',
-//   path: '/Users/mac/Documents/Программирование/ReactPortfolio/ReactCompressor/server/images/downloaded/downloaded1739d7e3-0510-4236-bf38-3162a833e61c/compressed_19.png',
-//   size: 11708
-// },
-// {
-//   fieldname: 'files',
-//   originalname: 'div.png',
-//   encoding: '7bit',
-//   mimetype: 'image/png',
-//   destination: '/Users/mac/Documents/Программирование/ReactPortfolio/ReactCompressor/server/images/downloaded/downloaded1739d7e3-0510-4236-bf38-3162a833e61c',
-//   filename: 'compressed_19.png',
-//   path: '/Users/mac/Documents/Программирование/ReactPortfolio/ReactCompressor/server/images/downloaded/downloaded1739d7e3-0510-4236-bf38-3162a833e61c/compressed_19.png',
-//   size: 72635
-// },

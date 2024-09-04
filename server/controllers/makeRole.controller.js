@@ -8,7 +8,7 @@ const makeVip = async (req, res, next) => {
       return next(errorHandler(422, "User Id required"));
     }
     const result = await pool.query(
-      "UPDATE usr SET role= 'vip' WHERE user_id = $1",
+      "UPDATE usr SET role= 'vip', role_updated_at = NOW() WHERE user_id = $1",
       [userId]
     );
 
@@ -28,7 +28,7 @@ const makePremium = async (req, res, next) => {
       return next(errorHandler(422, "User id required"));
     }
     const result = await pool.query(
-      "UPDATE usr SET role= 'premium' WHERE user_id = $1",
+      "UPDATE usr SET role= 'premium', role_updated_at = NOW() WHERE user_id = $1",
       [userId]
     );
 
@@ -48,7 +48,7 @@ const makeStarter = async (req, res, next) => {
       return next(errorHandler(422, "User id required"));
     }
     const result = await pool.query(
-      "UPDATE usr SET role= 'starter' WHERE user_id = $1",
+      "UPDATE usr SET role= 'starter', role_updated_at = NOW() WHERE user_id = $1",
       [userId]
     );
 
@@ -69,7 +69,7 @@ const makeUser = async (req, res, next) => {
       return next(errorHandler(422, "User id required"));
     }
     const result = await pool.query(
-      "UPDATE usr SET role= 'user' WHERE user_id = $1",
+      "UPDATE usr SET role= 'user', role_updated_at = NOW() WHERE user_id = $1",
       [userId]
     );
 

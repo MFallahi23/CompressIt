@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../public/logo2.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./styles/Header.css";
 import useAuth from "../hooks/useAuth";
 import { IoIosPricetags } from "react-icons/io";
@@ -14,10 +14,14 @@ import ProfileOptions from "./ProfileOptions.jsx";
 import { displayImg } from "../utils/imgUtils.jsx";
 import { getUserRoleLabel } from "../utils/roleUtils.jsx";
 import { FaFileImage } from "react-icons/fa";
+import { axiosPrivate } from "../api/axios.js";
 const Header = () => {
   const [showNav, setShowNav] = useState(false);
+  const location = useLocation();
   const [showProfileOpt, setShowProfileOpt] = useState(false);
   const [showDesktopOpt, setShowDesktopOpt] = useState(false);
+  const [numberOfNotif, setNumberOfNotif] = useState(0);
+
   const { auth } = useAuth();
   const dropDownRef = useRef(null);
   const menuRef = useRef(null);
@@ -56,6 +60,19 @@ const Header = () => {
       document.body.classList.remove("no-scroll");
     };
   }, [showNav, isMobile]);
+
+  useEffect(() => {
+    const getNumberOfNotif = async () => {
+      try {
+        const response = await axiosPrivate.get("/api/user/getnumberofnotif");
+        const numOfNot = response.data.number_of_notif;
+        setNumberOfNotif(numOfNot);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getNumberOfNotif();
+  }, [location]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -100,8 +117,13 @@ const Header = () => {
                     ref={menuRef}
                     onClick={() => setShowDesktopOpt(!showDesktopOpt)}
                     onBlur={() => setShowDesktopOpt(false)}
-                    className="cursor-pointer"
+                    className="cursor-pointer "
                   >
+                    {numberOfNotif > 0 && (
+                      <div className="absolute z-20 bg-orange-600 rounded-full  px-2 -top-1 -left-1">
+                        {numberOfNotif}
+                      </div>
+                    )}
                     <img
                       src={imageUrl}
                       alt="profile pic"
@@ -120,6 +142,7 @@ const Header = () => {
                         <ProfileOptions
                           setShowNav={setShowNav}
                           setShowDesktopOpt={setShowDesktopOpt}
+                          numberOfNotif={numberOfNotif}
                         />
                       </div>
                     </div>
@@ -135,13 +158,20 @@ const Header = () => {
         </nav>
 
         <div
-          className={`hamburger-menu md:hidden z-30 cursor-pointer ${
+          className={`hamburger-menu relative md:hidden z-30 cursor-pointer ${
             showNav ? "active__menu" : ""
           }`}
           onClick={() => setShowNav(!showNav)}
         >
           <div className="line"></div>
           <div className="line"></div>
+          {numberOfNotif > 0 && (
+            <div
+              className={`absolute z-20 bg-orange-600 rounded-full w-2 h-2  -left-1 ${
+                showNav ? "-top-2" : "-top-1"
+              }`}
+            ></div>
+          )}
           <div className="line"></div>
         </div>
 
@@ -202,7 +232,10 @@ const Header = () => {
                   onClick={() => setShowProfileOpt(!showProfileOpt)}
                   className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 relative ">
+                    {numberOfNotif > 0 && (
+                      <div className="absolute z-20 bg-orange-600 rounded-full w-2 h-2 top-2 -left-1"></div>
+                    )}
                     <FaUserFriends />
                     Profile
                   </div>
@@ -215,6 +248,7 @@ const Header = () => {
                     <ProfileOptions
                       setShowNav={setShowNav}
                       setShowDesktopOpt={setShowDesktopOpt}
+                      numberOfNotif={numberOfNotif}
                     />
                   </div>
                 </div>

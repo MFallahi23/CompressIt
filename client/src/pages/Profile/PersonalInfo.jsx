@@ -5,23 +5,27 @@ import "./styles/profile.css";
 import ModalProfile from "../../components/ModalProfile";
 import { getUserRoleLabel } from "../../utils/roleUtils.jsx";
 import { displayImg } from "../../utils/imgUtils.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import formatDate from "../../utils/dateFormatting.jsx";
-
+import { axiosPrivate } from "../../api/axios.js";
 const PersonalInfo = () => {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const [showModal, setShowModal] = useState(false);
-
-  // display usr img
-  // const displayImg = () => {
-  //   const profilePic = auth?.profilePic;
-  //   if (profilePic?.startsWith("https")) {
-  //     return profilePic;
-  //   } else {
-  //     return "http://localhost:3000/images/" + profilePic;
-  //   }
-  // };
-  console.log(auth);
+  const [showDeleteModal, setShowDeleteModa] = useState(false);
+  const navigate = useNavigate();
+  // Function to delete user account
+  const deleteAcc = async () => {
+    try {
+      const response = await axiosPrivate.post("/api/user/delete");
+      if (response.status === 200) {
+        setAuth({});
+        navigate("/");
+      }
+    } catch (error) {
+      setShowDeleteModa(false);
+      console.error(error);
+    }
+  };
 
   const [imageUrl, setImageUrl] = useState(displayImg(auth?.profilePic));
 
@@ -150,9 +154,35 @@ const PersonalInfo = () => {
         ) : (
           ""
         )}
-        <button className="bg-red-800 p-2 rounded-md font-bold text-xl mt-1 opacity-80">
+        <button
+          className="bg-red-800 p-2 rounded-md font-bold text-xl mt-1 opacity-80"
+          onClick={() => setShowDeleteModa(true)}
+        >
           Delete account
         </button>
+        {showDeleteModal && (
+          <div className=" fixed z-30 top-0 bottom-0 left-0 right-0 bg-slate-600 bg-opacity-80 flex justify-center items-center">
+            <div className="bg w-full h-full sm:w-fit sm:h-fit bg-slate-100  sm:rounded-lg text-blackColor sm:max-w-[500px] flex flex-col pt-40 sm:pt-4  gap-24 sm:gap-4 p-4">
+              <h1 className="text-3xl pl-4 sm:pl-auto">
+                Are you sure you want to delete your account?
+              </h1>
+              <div className="flex flex-col  sm:flex-row items-center gap-2 self-end">
+                <button
+                  className=" bg-red-600 p-1 rounded-md text-whiteBg w-[90vw] sm:w-auto"
+                  onClick={deleteAcc}
+                >
+                  Delete
+                </button>
+                <button
+                  className=" border-blackColor border p-1 rounded-md w-[90vw] sm:w-auto"
+                  onClick={() => setShowDeleteModa(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

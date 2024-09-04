@@ -9,6 +9,8 @@ import {
   makeUser,
   makeVip,
 } from "../controllers/makeRole.controller.js";
+import getNewUsers from "../controllers/getNewUsers.controller.js";
+import getAdminNotification from "../controllers/getAdminNotification.controller.js";
 
 const router = express.Router();
 
@@ -21,5 +23,7 @@ router.post("/deleteuser", deleteUser);
 router.get("/feedbacks", getFeedbacks);
 router.get("/allusers", getUsers);
 router.get("/user", getUser);
+router.get("/getnewusers", getNewUsers);
+router.get("/getnotifications", getAdminNotification);
 
 export default router;

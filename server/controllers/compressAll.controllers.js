@@ -4,7 +4,6 @@ import fetchPage from "../helpers/fetchPage.js";
 import isValidUrl from "../helpers/validUrl.js";
 
 const compressAll = async (req, res, next) => {
-  console.log("Starting backend");
   const userId = req.user;
   let index = 0;
   await deleteAllDownloadedFiles(userId);
@@ -45,6 +44,10 @@ const compressAll = async (req, res, next) => {
       console.error(`Error processing page ${currentUrl}:`, err.message);
     }
   }
+  await pool.query(
+    "UPDATE usr SET usage_count = usage_count+1, last_active = NOW() WHERE user_id=$1",
+    [userId]
+  );
   res.json({ index, userId });
 };
 

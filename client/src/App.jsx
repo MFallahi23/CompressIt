@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Home from "./pages/Home.jsx";
@@ -24,10 +24,20 @@ import Pricing from "./pages/Pricing.jsx";
 import useAuth from "./hooks/useAuth.jsx";
 import User from "./pages/User.jsx";
 import Deleted from "./pages/Deleted.jsx";
+import axios from "./api/axios.js";
 
 function App() {
   const { auth } = useAuth();
-  console.log(auth);
+  useEffect(() => {
+    const trackVisit = async () => {
+      try {
+        await axios.post("/api/user/visit", {}, { withCredentials: true });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    trackVisit();
+  }, []);
   return (
     <>
       <Routes>
@@ -47,8 +57,8 @@ function App() {
             <Route
               element={
                 <RequireAuth
-                  allowedRoles={["admin", "moderator", "premium", "user"]}
-                /> // REMOVE user
+                  allowedRoles={["admin", "vip", "premium", "user", "starter"]}
+                />
               }
             >
               <Route path="compress" element={<Compress />} />
@@ -57,7 +67,7 @@ function App() {
             <Route
               element={
                 <RequireAuth
-                  allowedRoles={["admin", "moderator", "premium", "user"]}
+                  allowedRoles={["admin", "vip", "premium", "user", "starter"]}
                 />
               }
             >

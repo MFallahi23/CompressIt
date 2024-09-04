@@ -33,7 +33,7 @@ const createSendToken = async (
 
   // saving refreshToken
   const setRefreshToken = await pool.query(
-    "UPDATE usr SET refresh_token = $1 WHERE user_id = $2",
+    "UPDATE usr SET refresh_token = $1, last_active = NOW() WHERE user_id = $2",
     [refreshToken, userId]
   );
   // Create secure cookie with refresh token

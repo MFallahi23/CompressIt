@@ -6,7 +6,7 @@ import { PiSignOutBold } from "react-icons/pi";
 import { Link, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 
-const ProfileOptions = ({ setShowNav, setShowDesktopOpt }) => {
+const ProfileOptions = ({ setShowNav, setShowDesktopOpt, numberOfNotif }) => {
   const navigate = useNavigate();
   const logout = useLogout();
 
@@ -40,7 +40,10 @@ const ProfileOptions = ({ setShowNav, setShowDesktopOpt }) => {
         }}
         className=" flex items-center gap-2 p-1"
       >
-        <div className="text-xl">
+        <div className="text-xl relative">
+          {numberOfNotif > 0 && (
+            <div className="absolute z-20 bg-orange-600 rounded-full w-2 h-2 top-0 left-1/2"></div>
+          )}
           <IoIosNotifications />
         </div>
 
