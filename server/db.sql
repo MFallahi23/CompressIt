@@ -6,6 +6,8 @@ CREATE TABLE usr(
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    email_verification_token VARCHAR(255),
     role user_role DEFAULT 'user',
     password VARCHAR(255) NOT NULL,
     occupation VARCHAR(255) DEFAULT 'none',
@@ -30,8 +32,8 @@ CREATE TABLE notifications (
 );
 
 CREATE TABLE user_notifications (
-    user_id uuid REFERENCES usr(user_id),
-    notification_id uuid REFERENCES notifications(id),
+    user_id uuid REFERENCES usr(user_id) ON DELETE CASCADE,
+    notification_id uuid REFERENCES notifications(id) ON DELETE CASCADE,
     read BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (user_id,notification_id)
 );

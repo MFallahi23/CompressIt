@@ -47,12 +47,6 @@ const SignUp = () => {
   const [pwdFocus, setPwdFocus] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
 
-  // Match Password
-  const [matchPwd, setMatchPwd] = useState("");
-  const [validMatch, setValidMatch] = useState(false);
-  const [matchFocus, setMatchFocus] = useState(false);
-  const [showMatch, setShowMatch] = useState(false);
-
   // Err
   const [errMsg, setErrMsg] = useState("");
 
@@ -73,17 +67,15 @@ const SignUp = () => {
     setValidEmail(result);
   }, [email]);
 
-  // Check if pwd and match is valid
+  // Check if pwd  is valid
   useEffect(() => {
     const result = PWD_REGEX.test(pwd);
     setValidPwd(result);
-    const match = pwd === matchPwd;
-    setValidMatch(match);
-  }, [pwd, matchPwd]);
+  }, [pwd]);
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, email, pwd, matchPwd]);
+  }, [user, email, pwd]);
 
   // function (handlers)
   const handleSubmit = async (e) => {
@@ -121,7 +113,7 @@ const SignUp = () => {
       setUser("");
       setEmail("");
       setPwd("");
-      setMatchPwd("");
+
       navigate(from, { replace: true });
     } catch (error) {
       if (!error?.response) {
@@ -266,49 +258,8 @@ const SignUp = () => {
             </p>
           </div>
 
-          {/* Match Password */}
-
-          <label htmlFor="confirm-pwd">
-            <span className={validMatch || !matchPwd ? "hide" : "invalid"}>
-              <CgDanger className=" text-primaryBg text-xl" />
-            </span>
-          </label>
-          <div className="input__container">
-            <input
-              type={showMatch ? "text" : "password"}
-              id="confirm-password"
-              value={matchPwd}
-              required
-              aria-invalid={validMatch ? "false" : "true"}
-              aria-describedby="matchnote"
-              onChange={(e) => setMatchPwd(e.target.value)}
-              className={matchPwd && !validMatch ? "invalid__input" : ""}
-              onFocus={() => setMatchFocus(true)}
-              onBlur={() => setMatchFocus(false)}
-            />
-            <span className="input__placeholder">Confirm password</span>
-            <FontAwesomeIcon
-              icon={showMatch ? faEye : faEyeSlash}
-              className="eye-icon cursor-pointer"
-              onClick={() => setShowMatch(!showMatch)}
-            />
-            <p
-              id="matchnote"
-              className={
-                matchFocus && !validMatch ? "instructions" : "offscreen"
-              }
-            >
-              <FontAwesomeIcon icon={faInfoCircle} />
-              Must match the first password input field.
-            </p>
-          </div>
-
           <button
-            // disabled={
-            //   !validName || !validPwd || !validMatch || !validEmail
-            //     ? true
-            //     : false
-            // }
+            disabled={!validName || !validPwd || !validEmail ? true : false}
             className=" bg-[#8b0000] text-whiteBg w-[100%] p-2  sm:p-3 rounded-md mt-4 hover:opacity-70 disabled:opacity-50"
           >
             Sign Up

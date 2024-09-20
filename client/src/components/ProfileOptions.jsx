@@ -1,7 +1,7 @@
 import { FaUser, FaMoneyCheck, FaHistory } from "react-icons/fa";
 import { IoIosNotifications } from "react-icons/io";
 import { VscFeedback } from "react-icons/vsc";
-import { IoSettings } from "react-icons/io5";
+
 import { PiSignOutBold } from "react-icons/pi";
 import { Link, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";

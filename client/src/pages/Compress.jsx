@@ -8,6 +8,7 @@ import CompressFolder from "../components/CompressFolder";
 import CompressFile from "../components/CompressFile";
 import CompressWebSite from "../components/CompressWebsite";
 import useAuth from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 const Compress = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
@@ -17,6 +18,7 @@ const Compress = () => {
   const [sizes, setSizes] = useState(undefined);
   const [type, setType] = useState("webpage");
   const [usageCount, setUsageCount] = useState(0);
+  const [compressionErrors, setCompressionErrors] = useState([]);
   const formatBytes = (bytes) => {
     const sizeUnits = ["Bytes", "KB", "MB", "GB"];
     if (bytes === 0) return "0 Byte";
@@ -37,6 +39,7 @@ const Compress = () => {
             setSizes={setSizes}
             setImages={setImages}
             setLoading={setLoading}
+            setCompressionErrors={setCompressionErrors}
           />
         );
       case "folder":
@@ -47,6 +50,7 @@ const Compress = () => {
             setSizes={setSizes}
             setImages={setImages}
             setLoading={setLoading}
+            setCompressionErrors={setCompressionErrors}
           />
         );
       case "file":
@@ -57,6 +61,7 @@ const Compress = () => {
             setSizes={setSizes}
             setImages={setImages}
             setLoading={setLoading}
+            setCompressionErrors={setCompressionErrors}
           />
         );
       case "website":
@@ -155,9 +160,11 @@ const Compress = () => {
             90 images and 10MB per compression
           </p>
           <p>Compressions left: {4 - usageCount}</p>
-          <button className="cta__btn  p-2 rounded-md">
-            Get unlimited compresions
-          </button>
+          <Link to={"/pricing"}>
+            <button className="cta__btn  p-2 rounded-md">
+              Get unlimited compresions
+            </button>
+          </Link>
         </div>
       ) : auth?.role === "admin" ? (
         <div className="flex flex-col items-center">
@@ -183,15 +190,15 @@ const Compress = () => {
             <span>
               {" "}
               {auth?.role === "premium"
-                ? "You can compress up to 4000 images and 5GB per one compression "
-                : "You can compress maximum 900 images and 1GB per compression"}
+                ? "You can compress up to 1000 images and 300MB per one compression "
+                : "You can compress maximum 400 images and 100MB per compression"}
             </span>
           </p>
 
           {auth?.role === "starter" && (
-            <button className="cta__btn p-2 rounded-md mt-5">
-              Get premium
-            </button>
+            <Link to={"/pricing"} className="mt-5">
+              <button className="cta__btn p-2 rounded-md ">Get premium</button>
+            </Link>
           )}
         </div>
       )}
@@ -253,11 +260,19 @@ const Compress = () => {
               </div>
             </div>
             <div className="compression-ratio p-3 rounded-full h-24 w-24 flex items-center justify-center text-blackColor my-5 text-2xl">
-              {(
-                ((sizes.sumOriginalSizes - sizes.sumOPtimizedSizes) /
-                  sizes.sumOriginalSizes) *
-                100
-              ).toFixed(2)}
+              {!isNaN(
+                (
+                  ((sizes.sumOriginalSizes - sizes.sumOPtimizedSizes) /
+                    sizes.sumOriginalSizes) *
+                  100
+                ).toFixed(2)
+              )
+                ? (
+                    ((sizes.sumOriginalSizes - sizes.sumOPtimizedSizes) /
+                      sizes.sumOriginalSizes) *
+                    100
+                  ).toFixed(2)
+                : "0"}
               %
             </div>
           </div>
@@ -266,22 +281,38 @@ const Compress = () => {
           {!loading ? (
             imgs && imgs.length > 0 ? (
               imgs?.map((src, i) => {
-                return (
-                  <div
-                    className="compress__img__ctn w-full cursor-pointer flex justify-center items-center"
-                    onClick={() => downloadImage(src)}
-                    key={i}
-                  >
-                    <img
-                      src={displayDownloadedImg(src)}
-                      alt="compressed images"
-                      className=""
-                    />
-                    <div className="compress__overlay flex justify-center items-center">
-                      <p className=" text-3xl md:text-xl">Download Image</p>
+                if (
+                  compressionErrors?.map((err) => err.filename).includes(src)
+                ) {
+                  const message = compressionErrors?.find(
+                    (err) => err.filename === src
+                  )?.message;
+                  return (
+                    <div
+                      className="w-full flex justify-center items-center p-6 bg-blackColor "
+                      key={i}
+                    >
+                      Error: {message}
                     </div>
-                  </div>
-                );
+                  );
+                } else {
+                  return (
+                    <div
+                      className="compress__img__ctn w-full cursor-pointer flex justify-center items-center"
+                      onClick={() => downloadImage(src)}
+                      key={i}
+                    >
+                      <img
+                        src={displayDownloadedImg(src)}
+                        alt="compressed images"
+                        className=""
+                      />
+                      <div className="compress__overlay flex justify-center items-center">
+                        <p className=" text-3xl md:text-xl">Download Image</p>
+                      </div>
+                    </div>
+                  );
+                }
               })
             ) : (
               ""

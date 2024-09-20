@@ -86,7 +86,7 @@ const forgotPassword = async (req, res, next) => {
         html: message,
         subject: "Reset password",
       });
-      res.json({
+      res.status(200).json({
         message:
           "An email has been sent to your email address. Check your email, and visit the link to reset your password",
       });
@@ -121,8 +121,7 @@ const resetPassword = async (req, res, next) => {
     );
 
     if (userFound.rows.length === 0) {
-      console.log("hello");
-      return next(errorHandler(400, "The reset link is invalid"));
+      return next(errorHandler(404, "The reset link is invalid"));
     }
 
     const userId = userFound.rows[0].user_id;
@@ -146,8 +145,8 @@ const resetPassword = async (req, res, next) => {
       subject: "Password changed",
     });
 
-    res.json({
-      message: "Password reset successful",
+    res.status(200).json({
+      message: "Password reset successfully",
       success: true,
     });
   } catch (error) {

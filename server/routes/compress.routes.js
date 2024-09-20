@@ -8,18 +8,18 @@ import { uploadCompress } from "../config/upload.js";
 import compressFolder from "../controllers/compressFolder.controllers.js";
 
 const router = express.Router();
-router.post("/", verifyJWT, compress);
-router.post("/all", verifyJWT, compressAll);
+router.post("/", compress);
+router.post("/all", compressAll);
 router.post(
   "/folder",
-  verifyJWT,
+
   uploadCompress.array("files"),
   compressFolder
 );
 router.get("/test", (req, res) => {
   res.send("Compress route works");
 });
-router.get("/download/:imageName", verifyJWT, download);
+router.get("/download/:imageName", download);
 router.get("/downloadAll", verifyJWT, downloadAll);
 
 export default router;

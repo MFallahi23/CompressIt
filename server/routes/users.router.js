@@ -14,7 +14,6 @@ import {
   validateUpdate,
 } from "../helpers/validate.js";
 import verifyJWT from "../middleware/verifyJWT.js";
-import verifyRole from "../middleware/verifyRole.js";
 import {
   forgotPassword,
   resetPassword,
@@ -27,6 +26,11 @@ import deleteAcc from "../controllers/deleteAcc.controller.js";
 import trackVisits from "../controllers/trackVisits.controller.js";
 import markAsRead from "../controllers/markAsRead.controller.js";
 import getNumberOfNotif from "../controllers/getNumberOfNotif.controller.js";
+import {
+  sendEmailVerif,
+  verifyEmail,
+} from "../controllers/verifyEmail.controller.js";
+import checkEmailVerified from "../controllers/checkEmailVerified.controller.js";
 
 const router = express.Router();
 
@@ -45,7 +49,8 @@ router.post("/reset/:resetToken", resetPassword);
 router.get("/getusagecount", verifyJWT, getUsageCount);
 router.post("/delete", verifyJWT, deleteAcc);
 router.post("/mark-as-read", verifyJWT, markAsRead);
-
+router.post("/send-email", verifyJWT, sendEmailVerif);
+router.post("/verify-email/:emailToken", verifyEmail);
 router.post(
   "/update",
   verifyJWT,
@@ -56,6 +61,7 @@ router.post(
 router.post("/feedback", verifyJWT, addFeedback);
 router.get("/notifications", verifyJWT, getNotifications);
 router.get("/getnumberofnotif", verifyJWT, getNumberOfNotif);
+router.get("/check-email", verifyJWT, checkEmailVerified);
 router.get("/logout", logout);
 
 export default router;

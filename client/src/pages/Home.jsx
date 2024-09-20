@@ -9,6 +9,7 @@ import { IoTime } from "react-icons/io5";
 import { AiFillBug } from "react-icons/ai";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { GiShardSword } from "react-icons/gi";
+import { FaRegImages } from "react-icons/fa";
 import faqData from "../data/faqData";
 
 import "./styles/home.css";
@@ -44,7 +45,7 @@ const Home = () => {
           </p>
           <button
             className="cta__btn transition rounded-md text-xl p-2 px-10 mt-8"
-            onClick={() => navigate("/pricing")}
+            onClick={() => navigate("/sign-up")}
           >
             Get started
           </button>
@@ -167,7 +168,7 @@ const Home = () => {
       </div>
       <div className="mb-10 max-w-[600px] mx-auto p-5">
         <h2 className="home__glowing_h text-5xl font-bold text-center">
-          Doing this all by yourself is not the best option!
+          Doing the image compression by yourself is not the best option!
         </h2>
         <p className=" text-slate-400 mt-6 md:mt-2">for several reasons:</p>
         <ul className="home__reasons_list text-xl mt-8 flex flex-col gap-5">
@@ -188,12 +189,12 @@ const Home = () => {
             </div>
           </li>
           <li className="flex items-center gap-2">
-            <AiFillBug className=" text-4xl" />
+            <FaRegImages className=" text-4xl" />
             <div className="">
               <span className=" text-red-500">
-                You can mess up the existing code!
+                There is a lot of image formats
               </span>{" "}
-              which can lead to an infinite number of bugs!
+              which can make the compression process x10 time consuming
             </div>
           </li>
           <li className="flex items-center gap-2">
@@ -241,7 +242,11 @@ const Home = () => {
               Twitter
             </a>{" "}
             or by{" "}
-            <a href="" className=" underline">
+            <a
+              href="mailto:mohcinefallahi23@gmail.com"
+              target="_blank"
+              className=" underline"
+            >
               email
             </a>
           </p>

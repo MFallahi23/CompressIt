@@ -1,27 +1,20 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import "./styles/signUp.css";
-import Oauth from "../components/Oauth";
 import axios from "../api/axios";
 import useAuth from "../hooks/useAuth";
-import useInput from "../hooks/useInput";
-const SignIn = () => {
-  const navigate = useNavigate();
+const ResetPass = () => {
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
-  const { auth, setAuth } = useAuth();
 
+  //   Params
+  const { resetToken } = useParams();
   // Refs
 
   const errRef = useRef();
 
   /****** States  *******/
-
-  // Email
-  // const [email, setEmail] = useState("");
-  const [email, resetEmail, emailAttribs] = useInput("email", "");
 
   // Password
   const [pwd, setPwd] = useState("");
@@ -31,9 +24,11 @@ const SignIn = () => {
   // Err
   const [errMsg, setErrMsg] = useState("");
 
+  //   Success
+  const [success, setSuccess] = useState(false);
   useEffect(() => {
     setErrMsg("");
-  }, [email, pwd]);
+  }, [pwd]);
 
   // function (handlers)
   const handleSubmit = async (e) => {
@@ -41,39 +36,30 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "/api/user/login",
-        JSON.stringify({ email, password: pwd }),
+        `/api/user/reset/${resetToken}`,
+        { password: pwd },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
-      const { accessToken, role, username, profilePic, createdAt, occupation } =
-        response?.data;
 
-      setAuth({
-        username,
-        email,
-        role,
-        accessToken,
-        profilePic,
-        createdAt,
-        occupation,
-      });
-
-      resetEmail();
       setPwd("");
-      navigate(from, { replace: true });
+      if (response.status === 200) {
+        setSuccess(true);
+      }
     } catch (error) {
       if (!error?.response) {
         console.log(error);
         setErrMsg("No server response");
+      } else if (error.response?.status === 404) {
+        setErrMsg("Invalid reset link");
       } else if (error.response?.status === 400) {
-        setErrMsg("Missing email or password");
+        setErrMsg("Missing  password");
       } else if (error.response?.status === 401) {
-        setErrMsg("Wrong credentials");
+        setErrMsg("Unauthorized");
       } else {
-        setErrMsg("Login Failed");
+        setErrMsg("Reset Failed");
       }
       errRef.current.focus();
     }
@@ -88,28 +74,17 @@ const SignIn = () => {
         >
           {errMsg}
         </p>
-        <h1 className=" text-3xl">Sign In</h1>
-        <h3 className=" opacity-80 -mt-1">
-          Create a free account and speed up your app
+        <h1 className=" text-3xl">Reset password</h1>
+        <h3 className={`${success && "hidden"} opacity-80 -mt-1`}>
+          Please create a new password{" "}
         </h3>
         <form
           onSubmit={handleSubmit}
-          className=" signForm flex flex-col gap-2 items-center mt-1 sm:mt-3 w-[100%] sm:max-w-auto mx-auto"
+          className={`${
+            success && "hidden"
+          } signForm flex flex-col gap-2 items-center mt-1 sm:mt-3 w-[100%] sm:max-w-auto mx-auto`}
         >
-          {/* Email */}
-          <div className="input__container">
-            <input
-              type="email"
-              id="email"
-              value={email}
-              // onChange={(e) => setEmail(e.target.value)}
-              {...emailAttribs}
-            />
-            <span className="input__placeholder">Email</span>
-          </div>
-
           {/* Password */}
-
           <div className="input__container">
             <input
               type={showPwd ? "text" : "password"}
@@ -127,25 +102,20 @@ const SignIn = () => {
           </div>
 
           <button className=" bg-[#8b0000] text-whiteBg w-[100%] p-2  sm:p-3 rounded-md mt-4 hover:opacity-70 disabled:opacity-50">
-            Sign In
+            Reset
           </button>
         </form>
-
-        <Link className=" text-primaryBg underline" to={"/forgot-password"}>
-          Forgot password?
-        </Link>
-
+        {success && (
+          <div>Password reset successfully, please return to sign in page</div>
+        )}
         <p>
-          Don't have an account?{" "}
-          <Link className=" text-primaryBg underline" to={"/sign-up"}>
-            Sign up
+          <Link className=" text-primaryBg underline" to={"/sign-in"}>
+            Back to sign in
           </Link>
         </p>
-        <p className="sign-up__line my-1 sm:my-2">or</p>
-        <Oauth setErrMsg={setErrMsg} />
       </div>
     </section>
   );
 };
 
-export default SignIn;
+export default ResetPass;

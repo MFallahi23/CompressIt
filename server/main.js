@@ -11,6 +11,8 @@ import credentials from "./middleware/credentials.js";
 import cookieParser from "cookie-parser";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import verifyRole from "./middleware/verifyRole.js";
+import verifyJWT from "./middleware/verifyJWT.js";
 
 dotenv.config();
 const app = express();
@@ -33,8 +35,8 @@ app.get("/", (req, res) => {
   res.send("hello");
 });
 app.use("/api/user", userRoute);
-app.use("/api/compress", compressRoute);
-app.use("/api/admin", adminRoute);
+app.use("/api/compress", verifyJWT, compressRoute);
+app.use("/api/admin", verifyJWT, verifyRole("admin"), adminRoute);
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });

@@ -3,7 +3,14 @@ import isValidUrl from "../utils/isValidUrl";
 import { axiosPrivate } from "../api/axios";
 import { FaPlusCircle } from "react-icons/fa";
 
-const CompressFile = ({ setError, error, setSizes, setImages, setLoading }) => {
+const CompressFile = ({
+  setError,
+  error,
+  setSizes,
+  setImages,
+  setLoading,
+  setCompressionErrors,
+}) => {
   const [dragActive, setDragActive] = useState(false);
   const [collectedFiles, setCollectedFiles] = useState([]);
   const inputRef = useRef(null);
@@ -98,8 +105,19 @@ const CompressFile = ({ setError, error, setSizes, setImages, setLoading }) => {
 
       const userId = response?.data.userId;
       const sizes = response?.data.sizes;
+      const compressionErrors = response?.data.compressionErrors || [];
       setSizes(sizes);
       setLoading(false);
+      console.log(compressionErrors);
+
+      setCompressionErrors(() => {
+        return compressionErrors.map((err) => {
+          return {
+            message: err.message,
+            filename: `compressed${userId}/${err.filename}`,
+          };
+        });
+      });
 
       setImages(() => {
         return resultImages.map((img) => {
@@ -107,7 +125,15 @@ const CompressFile = ({ setError, error, setSizes, setImages, setLoading }) => {
         });
       });
     } catch (error) {
-      setError(error);
+      setLoading(false);
+
+      if (error?.response?.status === 401) {
+        setError("Exceeded the free limit!");
+      } else {
+        const errorMessage =
+          error.response?.data?.message || "An error occurred";
+        setError(errorMessage);
+      }
     }
   };
   useEffect(() => {
@@ -139,7 +165,7 @@ const CompressFile = ({ setError, error, setSizes, setImages, setLoading }) => {
         <input
           type="file"
           multiple={true}
-          accept="image/*"
+          accept="image/*,image/heic,image/heif"
           className=" hidden"
           ref={inputRef}
           onChange={handleChange}

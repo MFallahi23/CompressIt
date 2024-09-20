@@ -21,20 +21,24 @@ const compressImages = async (userId) => {
     await deleteAllCompressedFiles(userId);
     let sumOriginalSizes = 0;
     let sumOPtimizedSizes = 0;
+    let compressionErrors = [];
     for (const file of await fs.readdir(downloadDirPath)) {
       try {
-        const { originalSize, optimizedSize } = await compressOneImage(
+        const { originalSize, optimizedSize, error } = await compressOneImage(
           file,
           downloadDirPath,
           compressDirPath
         );
         sumOriginalSizes += originalSize;
         sumOPtimizedSizes += optimizedSize;
+        if (Object.keys(error).length !== 0) {
+          compressionErrors.push(error);
+        }
       } catch (error) {
         console.error(`Error compressing file ${file}:`, error);
       }
     }
-    return [sumOriginalSizes, sumOPtimizedSizes];
+    return [sumOriginalSizes, sumOPtimizedSizes, compressionErrors];
   } catch (error) {
     console.error(error);
   }

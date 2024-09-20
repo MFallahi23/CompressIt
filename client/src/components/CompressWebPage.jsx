@@ -10,6 +10,7 @@ const CompressWebPage = ({
   setSizes,
   setImages,
   setLoading,
+  setCompressionErrors,
 }) => {
   // Function to submit the url to the server
   const handleSubmit = async (e) => {
@@ -34,8 +35,17 @@ const CompressWebPage = ({
 
       const userId = response?.data.userId;
       const sizes = response?.data.sizes;
+      const compressionErrors = response?.data.compressionErrors || [];
       setSizes(sizes);
       setLoading(false);
+      setCompressionErrors(() => {
+        return compressionErrors.map((err) => {
+          return {
+            message: err.message,
+            filename: `compressed${userId}/${err.filename}`,
+          };
+        });
+      });
 
       setImages(() => {
         return resultImages.map((img) => {
@@ -46,6 +56,8 @@ const CompressWebPage = ({
       setLoading(false);
       if (error?.response?.status === 422) {
         setError(error?.response?.data.error);
+      } else if (error?.response?.status === 413) {
+        setError("Exceeded the free limit!");
       } else {
         setError("An error occured!");
       }

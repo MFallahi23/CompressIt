@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import isValidUrl from "../utils/isValidUrl";
 import { axiosPrivate } from "../api/axios";
 import { FaPlusCircle } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
@@ -9,12 +8,12 @@ const CompressFolder = ({
   setSizes,
   setImages,
   setLoading,
+  setCompressionErrors,
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [collectedFiles, setCollectedFiles] = useState([]);
   const inputRef = useRef(null);
   const { auth } = useAuth();
-  console.log(auth?.role);
 
   // Function to return the appropriate limitations depending on the user role
   const defineLimit = () => {
@@ -148,9 +147,17 @@ const CompressFolder = ({
 
       const userId = response?.data.userId;
       const sizes = response?.data.sizes;
+      const compressionErrors = response?.data.compressionErrors || [];
       setSizes(sizes);
       setLoading(false);
-      console.log(resultImages);
+      setCompressionErrors(() => {
+        return compressionErrors.map((err) => {
+          return {
+            message: err.message,
+            filename: `compressed${userId}/${err.filename}`,
+          };
+        });
+      });
       setImages(() => {
         return resultImages.map((img) => {
           return `compressed${userId}/${img}`;
@@ -158,8 +165,14 @@ const CompressFolder = ({
       });
     } catch (error) {
       setLoading(false);
-      const errorMessage = error.response?.data?.message || "An error occurred";
-      setError(errorMessage);
+
+      if (error?.response?.status === 413) {
+        setError("Exceeded the free limit!");
+      } else {
+        const errorMessage =
+          error.response?.data?.message || "An error occurred";
+        setError(errorMessage);
+      }
     }
   };
   useEffect(() => {

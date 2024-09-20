@@ -5,6 +5,7 @@ import "./styles/Header.css";
 import useAuth from "../hooks/useAuth";
 import { IoIosPricetags } from "react-icons/io";
 import { useMediaQuery } from "react-responsive";
+import { MdSupportAgent } from "react-icons/md";
 import { FaQuestionCircle } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
@@ -23,6 +24,7 @@ const Header = () => {
   const [numberOfNotif, setNumberOfNotif] = useState(0);
 
   const { auth } = useAuth();
+
   const dropDownRef = useRef(null);
   const menuRef = useRef(null);
 
@@ -71,7 +73,9 @@ const Header = () => {
         console.error(error);
       }
     };
-    getNumberOfNotif();
+    if (auth && Object.keys(auth).length > 0) {
+      getNumberOfNotif();
+    }
   }, [location]);
 
   useEffect(() => {
@@ -98,18 +102,33 @@ const Header = () => {
             >
               <Link to={"/compress"}>Compress</Link>
             </li>
+            {(!auth ||
+              Object.keys(auth).length === 0 ||
+              auth?.role === "user") && (
+              <li
+                onClick={() => setShowNav(false)}
+                className="flex items-center gap-2"
+              >
+                <Link to={"/pricing"}> Pricing</Link>
+              </li>
+            )}
+            {(!auth ||
+              Object.keys(auth).length === 0 ||
+              auth?.role === "user") && (
+              <li
+                onClick={() => setShowNav(false)}
+                className="flex items-center gap-2"
+              >
+                <Link to={"/faq"}>FAQ</Link>
+              </li>
+            )}
             <li
               onClick={() => setShowNav(false)}
               className="flex items-center gap-2"
             >
-              <Link to={"/pricing"}> Pricing</Link>
+              <Link to="/contact">Contact</Link>
             </li>
-            <li
-              onClick={() => setShowNav(false)}
-              className="flex items-center gap-2"
-            >
-              <a href="#faq">FAQ</a>
-            </li>
+
             {auth && Object.entries(auth).length !== 0 ? (
               <>
                 <li className=" relative header__desktop__profile">
@@ -207,24 +226,49 @@ const Header = () => {
               ""
             )}
             <li onClick={() => setShowNav(false)}>
-              <Link className="flex items-center gap-2" to={"/compress"}>
+              <Link
+                className="flex items-center gap-2 p-2 rounded-full"
+                to={"/compress"}
+              >
                 <FaFileImage />
                 Compress
               </Link>
             </li>
-            <li onClick={() => setShowNav(false)}>
-              <Link to={"/pricing"} className="flex items-center gap-2">
-                <IoIosPricetags />
-                <p>Pricing</p>
-              </Link>
-            </li>
+            {(!auth ||
+              Object.keys(auth).length === 0 ||
+              auth?.role === "user") && (
+              <li onClick={() => setShowNav(false)}>
+                <Link
+                  to={"/pricing"}
+                  className="flex items-center gap-2  p-2 rounded-full"
+                >
+                  <IoIosPricetags />
+                  <p>Pricing</p>
+                </Link>
+              </li>
+            )}
 
-            <li
-              onClick={() => setShowNav(false)}
-              className="flex items-center gap-2"
-            >
-              <FaQuestionCircle />
-              <a href="#faq">FAQ</a>
+            {(!auth ||
+              Object.keys(auth).length === 0 ||
+              auth?.role === "user") && (
+              <li onClick={() => setShowNav(false)}>
+                <Link
+                  to={"/faq"}
+                  className="flex items-center gap-2  p-2 rounded-full"
+                >
+                  <FaQuestionCircle />
+                  <p>FAQ</p>
+                </Link>
+              </li>
+            )}
+            <li onClick={() => setShowNav(false)}>
+              <Link
+                to={"/contact"}
+                className="flex items-center gap-2  p-2 rounded-full"
+              >
+                <MdSupportAgent />
+                <p>Contact</p>
+              </Link>
             </li>
             {auth && Object.entries(auth).length !== 0 ? (
               <>
@@ -232,7 +276,7 @@ const Header = () => {
                   onClick={() => setShowProfileOpt(!showProfileOpt)}
                   className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2 relative ">
+                  <div className="flex items-center gap-2 relative p-2">
                     {numberOfNotif > 0 && (
                       <div className="absolute z-20 bg-orange-600 rounded-full w-2 h-2 top-2 -left-1"></div>
                     )}
@@ -258,10 +302,11 @@ const Header = () => {
                 onClick={() => {
                   setShowNav(false);
                 }}
-                className="flex items-center gap-2 "
               >
-                <IoLogIn />
-                <Link to={"/sign-in"}>Login</Link>
+                <Link to={"/sign-in"} className="flex items-center gap-2 p-2">
+                  <IoLogIn />
+                  Login
+                </Link>
               </li>
             )}
           </ul>

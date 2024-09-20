@@ -127,12 +127,6 @@ const PersonalInfo = () => {
                   : "You can compress maximum 1000 images and 1GB per compression"}
               </span>
             </p>
-
-            {auth?.role === "starter" && (
-              <button className="cta__btn p-2 rounded-md mt-5">
-                Get premium
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -148,9 +142,11 @@ const PersonalInfo = () => {
           ""
         )}
         {auth?.role === "user" || auth?.role === "starter" ? (
-          <button className="cta__btn transition p-2 rounded-md text-xl px-10 mt-1">
-            Upgrade
-          </button>
+          <Link className="mt-1" to={"/pricing"}>
+            <button className="cta__btn transition p-2 rounded-md text-xl px-10 ">
+              Upgrade
+            </button>
+          </Link>
         ) : (
           ""
         )}

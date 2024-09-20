@@ -6,6 +6,15 @@ import { optimize } from "svgo";
 import { exec } from "child_process";
 const execPromise = util.promisify(exec);
 
+const changeExtension = (file) => {
+  const ext = extname(file).slice(1).toLowerCase();
+  if (["tiff", "bmp", "heic"].includes(ext)) {
+    return `${file.slice(0, file.lastIndexOf("."))}.jpg`;
+  } else {
+    return file;
+  }
+};
+
 const compressOneImage = async (file, dirPath, compressPath) => {
   try {
     let originalSize;
@@ -13,7 +22,8 @@ const compressOneImage = async (file, dirPath, compressPath) => {
     const ext = extname(file).slice(1).toLowerCase();
     const filePath = path.join(dirPath, file);
     let outputPath;
-    if (["webp", "tiff", "bmp", "ico", "heic"].includes(ext)) {
+    // if (["webp", "tiff", "bmp", "ico", "heic"].includes(ext)) {
+    if (["tiff", "bmp", "heic"].includes(ext)) {
       outputPath = path.join(
         compressPath,
         `${file.slice(0, file.lastIndexOf("."))}.jpg`
@@ -28,7 +38,6 @@ const compressOneImage = async (file, dirPath, compressPath) => {
       case "webp":
       case "tiff":
       case "bmp":
-      case "ico":
       case "heic":
         originalSize = (await fs.stat(filePath)).size;
         console.log(file);
@@ -49,13 +58,27 @@ const compressOneImage = async (file, dirPath, compressPath) => {
         optimizedSize = (await fs.stat(outputPath)).size;
         break;
       default:
-        console.error("Not supported format:", ext);
-        return { originalSize: 0, optimizedSize: 0 };
+        console.error(`Not supported format: ${ext}`);
+        return {
+          originalSize: 0,
+          optimizedSize: 0,
+          error: {
+            filename: changeExtension(file),
+            message: `Not supported format: ${ext}`,
+          },
+        };
     }
-    return { originalSize, optimizedSize };
+    return { originalSize, optimizedSize, error: {} };
   } catch (error) {
     console.error(error);
-    return { originalSize: 0, optimizedSize: 0 };
+    return {
+      originalSize: 0,
+      optimizedSize: 0,
+      error: {
+        filename: changeExtension(file),
+        message: `An error occured during compression`,
+      },
+    };
   }
 };
 const compressWithTool = async (command) => {
@@ -97,6 +120,7 @@ const compressCommon = async (inputPath, outputPath, format) => {
             success = true;
           } catch (sharpError) {
             console.error("Error compressing JPEG with sharp:", sharpError);
+            throw sharpError;
           }
         }
         break;
@@ -117,17 +141,20 @@ const compressCommon = async (inputPath, outputPath, format) => {
             success = true;
           } catch (sharpError) {
             console.error("Error compressing PNG with sharp:", sharpError);
+            throw sharpError;
           }
         }
         break;
       case "bmp":
-      case "ico":
       case "tiff":
-      case "webp":
+      // case "webp":
+      case "heic":
+        // case "ico":
         try {
           await compressWithTool(
             `magick ${inputPath} -quality 80 ${outputPath}`
           );
+
           await fs.unlink(inputPath);
           success = true;
         } catch (error) {
@@ -143,30 +170,23 @@ const compressCommon = async (inputPath, outputPath, format) => {
             success = true;
           } catch (sharpError) {
             console.error("Error compressing image with sharp:", sharpError);
+            throw sharpError;
           }
         }
         break;
-      case "heic":
+      case "webp":
         try {
-          await compressWithTool(`heif-convert ${inputPath} ${outputPath}`);
+          await sharp(inputPath)
+            .toFormat("webp", { quality: 80 }) // Keep the format as webp and adjust quality
+            .toFile(outputPath);
           await fs.unlink(inputPath);
           success = true;
-        } catch (error) {
-          console.error(
-            "Error with heif-convert, falling back to sharp:",
-            error
-          );
-          try {
-            await sharp(inputPath)
-              .toFormat("jpeg", { quality: 80 })
-              .toFile(outputPath);
-            await fs.unlink(inputPath);
-            success = true;
-          } catch (sharpError) {
-            console.error("Error compressing HEIC with sharp:", sharpError);
-          }
+        } catch (sharpError) {
+          console.error("Error compressing WebP with sharp:", sharpError);
+          throw sharpError;
         }
         break;
+
       default:
         console.log(`Unsupported`);
         return;
@@ -180,6 +200,7 @@ const compressCommon = async (inputPath, outputPath, format) => {
     }
   } catch (error) {
     console.error("Error during compression :", error);
+    throw error;
   }
 };
 

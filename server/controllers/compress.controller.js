@@ -11,7 +11,7 @@ import { errorHandler } from "../helpers/error.js";
 import compressImages from "../helpers/compressImages.js";
 import { defineLimit } from "../helpers/getRole.js";
 import pool from "../helpers/db.js";
-import { query } from "express";
+import { checkSize, isLimitRespected } from "../helpers/checkSize.js";
 
 const regex = /\.(jpg|jpeg|svg|png|gif|bmp|webp|tiff|ico|heic)&/;
 
@@ -26,9 +26,14 @@ const processfilename = (filename) => {
   }
 };
 
-const requestPromise = (options, next) => {
+const requestPromise = (options) => {
   return new Promise((resolve, reject) => {
+    const requestTimeout = setTimeout(() => {
+      reject(new Error("Request took too long to respond"));
+    }, 5000);
     request(options, (error, response, html) => {
+      clearTimeout(requestTimeout);
+
       if (error) {
         reject(error);
       } else if (response.statusCode === 200) {
@@ -43,8 +48,20 @@ const requestPromise = (options, next) => {
 const compress = async (req, res, next) => {
   try {
     const userId = req.user;
+
     const limit = await defineLimit(userId, next);
     await deleteAllDownloadedFiles(userId);
+    const { rows: user } = await pool.query(
+      "SELECT usage_count, role FROM usr WHERE user_id=$1",
+      [userId]
+    );
+    if (user.length === 0) {
+      return next(errorHandler(404, "User not found"));
+    }
+    if (user[0].role === "user" && user[0].usage_count >= 4) {
+      return next(errorHandler(413, "You exceeded the free limit!"));
+    }
+
     // const url =
     //   "https://www.scrapingbee.com/blog/web-scraping-101-with-python/";
     const { url } = req.body;
@@ -61,6 +78,7 @@ const compress = async (req, res, next) => {
       console.log("not valid");
       return next(errorHandler(422, "URL not valid!"));
     }
+    console.log("starting");
 
     const imgs = [];
     const options = {
@@ -70,6 +88,7 @@ const compress = async (req, res, next) => {
     };
 
     const html = await requestPromise(options);
+    console.log("Parsed html");
 
     const $ = load(html);
     const imgPromises = [];
@@ -96,7 +115,12 @@ const compress = async (req, res, next) => {
       }
       return filename;
     });
-    const [sumOriginalSizes, sumOPtimizedSizes] = await compressImages(userId);
+    const totalSize = await checkSize(userId);
+    if (!isLimitRespected(totalSize, user[0].role)) {
+      return next(errorHandler(413, "Error due to exceeding size limit"));
+    }
+    const [sumOriginalSizes, sumOPtimizedSizes, compressionErrors] =
+      await compressImages(userId);
     await pool.query(
       "UPDATE usr SET usage_count = usage_count+1, last_active = NOW() WHERE user_id=$1",
       [userId]
@@ -105,6 +129,7 @@ const compress = async (req, res, next) => {
       imgs: changedNames,
       userId,
       sizes: { sumOriginalSizes, sumOPtimizedSizes },
+      compressionErrors,
     });
   } catch (error) {
     console.error("catch error:", error);

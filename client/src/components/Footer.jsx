@@ -2,6 +2,7 @@ import React from "react";
 import logo from "../../public/logo2.svg";
 import twitter_img from "../assets/twitter-pp.jpg";
 import "./styles/Footer.css";
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="mt-auto bg-whiteBg text-blackColor p-8 text-center">
@@ -18,19 +19,32 @@ const Footer = () => {
             Copyright © 2024 - All rights reserved
           </div>
         </div>
-        <div className="secondary-column flex flex-col md:flex-row md:flex-wrap items-center gap-10">
+        <div className="secondary-column flex flex-col md:flex-row md:flex-wrap items-center md:items-start gap-10">
           <div className="footer__Legal">
             <h2 className="font-bold">Legal</h2>
             <ul className="flex flex-col">
-              <li>Terms of services</li>
-              <li>Privacy policy</li>
+              <li>
+                <Link to={"/tos"}>Terms of services</Link>
+              </li>
+              <li>
+                {" "}
+                <Link to={"/privacy"}>Privacy policy</Link>
+              </li>
+              <li>
+                {" "}
+                <Link to={"/license"}>Licenses</Link>
+              </li>
             </ul>
           </div>
           <div className="footer__Links">
             <h2 className="font-bold">Links</h2>
             <ul className="flex flex-col">
-              <li>Login</li>
-              <li>Pricing</li>
+              <li>
+                <Link to={"/sign-in"}>Login</Link>
+              </li>
+              <li>
+                <Link to={"/pricing"}>Pricing</Link>
+              </li>
             </ul>
           </div>
         </div>

@@ -27,7 +27,7 @@ const Users = ({ users }) => {
           );
         })
       ) : (
-        <div>Your app don't have users</div>
+        <div>Your app doesn't have users</div>
       )}
     </div>
   );

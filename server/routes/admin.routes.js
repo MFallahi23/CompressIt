@@ -11,6 +11,7 @@ import {
 } from "../controllers/makeRole.controller.js";
 import getNewUsers from "../controllers/getNewUsers.controller.js";
 import getAdminNotification from "../controllers/getAdminNotification.controller.js";
+import deleteFeed from "../controllers/deleteFeed.controller.js";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.post("/makestarter", makeStarter);
 router.post("/makepremium", makePremium);
 router.post("/makeuser", makeUser);
 router.post("/deleteuser", deleteUser);
+router.post("/deletefeedback", deleteFeed);
 router.get("/feedbacks", getFeedbacks);
 router.get("/allusers", getUsers);
 router.get("/user", getUser);

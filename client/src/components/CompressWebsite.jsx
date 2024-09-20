@@ -62,7 +62,7 @@ const CompressWebSite = ({
       {error && (
         <div className=" text-center bg-red-700 p-1 rounded-md">{error}</div>
       )}
-      <h1 className="text-5xl text-center mb-8">Paste your website url here</h1>
+      {/* <h1 className="text-5xl text-center mb-8">Paste your website url here</h1>
       <form
         action=""
         className=" flex  gap-5 flex-col w-[100%] md:flex-row"
@@ -81,7 +81,10 @@ const CompressWebSite = ({
         <button className="cta__btn p-2 rounded-md text-nowrap text-md basis-full md:basis-auto text-primaryText">
           Speed up your website
         </button>
-      </form>
+      </form> */}
+      <h1 className=" text-5xl text-center">
+        In construction, will be available soon!
+      </h1>
     </div>
   );
 };
