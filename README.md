@@ -47,6 +47,7 @@ cd client && npm run dev
 
 ## Contact
 
-Developer: Mouhcine Fallahi
-GitHub: https://github.com/MFallahi23
-Email: [email]
+- Developer: Mouhcine Fallahi
+- email: mohcinefallahi23@gmail.com
+
+
